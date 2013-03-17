@@ -12,10 +12,13 @@ class RfidListener (AbstractListener):
     '''
     listener for RFID tags
     '''
+    NAME = 'em4100'
+    SIZE = 5
+    
 
     def read_id(self):
         l = [ ]
-        for _i in xrange(5):
-            l.append(self.read_port())
+        for _i in xrange(self.SIZE):
+            l.append('%02x' % ord(self.read_port()))
             
-        return 'em4100(' + ''.join(l) + ')'
+        return self.NAME + '(' + '-'.join(l) + ')'

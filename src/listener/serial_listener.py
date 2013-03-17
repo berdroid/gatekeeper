@@ -20,7 +20,7 @@ class SerialListener (object):
         
         #self.port = serial.Serial(portname, int(baudrate))
         
-        self.DATA = 'ABC89'
+        self.DATA = [0x06, 0x34, 0x00, 0x45, 0x8e]
         self.data = list(self.DATA)
         
         
@@ -30,6 +30,6 @@ class SerialListener (object):
             self.data = list(self.DATA)
             time.sleep(3)
             
-        return self.data.pop()
+        return chr(self.data.pop(0))
 
         return self.port.read()
