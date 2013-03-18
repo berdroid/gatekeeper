@@ -21,20 +21,12 @@ class AbstractListener (multiprocessing.Process):
         '''
         super(AbstractListener, self).__init__()
         self.gate = gate
-        self.portname = port
+        self.port = port
         self.queue = queue
         self.active = True
         self.logger = logger
         
         
-    def open_port(self):
-        raise NotImplemented()
-    
-    
-    def read_port(self):
-        raise NotImplemented()
-    
-    
     def read_id(self):
         raise NotImplemented()
 
@@ -44,7 +36,7 @@ class AbstractListener (multiprocessing.Process):
 
 
     def run(self):
-        self.open_port()
+        self.port.open()
         
         while self.active:
             msg = self.read_msg()

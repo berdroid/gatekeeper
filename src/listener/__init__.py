@@ -7,4 +7,4 @@ from lib import factory
 ListenerFactory = factory.Factory()
 
 
-import rfid_serial_listener
+import rfid_listener
