@@ -5,6 +5,7 @@ Created on Mar 18, 2013
 '''
 
 from connection import ConnectionError
+from lib.dict_obj import DictObj
 
 
 
@@ -12,19 +13,25 @@ class AbstractConnection (object):
     """
     abstract super class for connection objects
     """
+    DEFAULTS = DictObj()
+    
 
     def __init__(self, name, params, logger):
         self.connection_name = name
-        self.params = params
         self.log = logger
+        self.check_params(params)
         
         self.log.log('Connection %s@%s: %s' % (self.name, self.connection_name, self.params))
         
         self.port = None
 
 
-    def _fail(self, e):
-        raise ConnectionError(self.connection_name + ' ' + str(e))
+    def check_params(self, params):
+        self.params = DictObj(self.DEFAULTS)
+        self.params.update(params)
+        
+        if None in self.params.itervalues():
+            raise ConnectionError('Connection type %s@%s is missing required parameters' % (self.name, self.connection_name))
 
 
     def init_string(self):
@@ -44,26 +51,6 @@ class AbstractConnection (object):
 
     def read(self):
         return self.port.read(1)
-
-
-    def readline(self, timer=None, ui_update=lambda: None):
-        ln = []
-        while timer is None or not timer.expired():
-            try:
-                ui_update()
-
-                c = self.read()
-                ln.append(c)
-
-                if c == '\r':
-                    del ln[-1]
-                elif c == '\n':
-                    return ''.join(ln)
-
-            except Exception, e:
-                raise IOError(e)
-
-        raise CommTimeOutError('timer expired')
 
 
     def write(self, data):

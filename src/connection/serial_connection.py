@@ -8,6 +8,7 @@ from connection import ConnectionFactory
 from abstract_connection import AbstractConnection
 
 from serial import Serial, SerialTimeoutException
+from lib.dict_obj import DictObj
 
 
 
@@ -19,6 +20,12 @@ class SerialConnection (AbstractConnection):
     description = 'connect via serial port'
 
         
+    DEFAULTS = DictObj(
+        device = None,
+        baudrate = 9600
+    )
+    
+
     def open(self, **kw):
         """
         beginn communication by triggering DTR

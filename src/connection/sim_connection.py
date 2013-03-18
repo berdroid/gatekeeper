@@ -7,6 +7,7 @@ Created on Mar 18, 2013
 from connection import ConnectionFactory
 from connection.abstract_connection import AbstractConnection
 import time
+from lib.dict_obj import DictObj
 
 
 
@@ -17,15 +18,19 @@ class SimConnection (AbstractConnection):
     name = 'sim'
     description = 'simulated serial port'
 
+    DEFAULTS = DictObj(
+        data = None
+    )
+    
+
 
     def open(self, **kw):
-        self.DATA = [0x06, 0x34, 0x00, 0x45, 0x8e]
-        self.data = list(self.DATA)
+        self.data = list()
 
 
     def read(self):
         if len(self.data) == 0:
-            self.data = list(self.DATA)
+            self.data = list(self.params.data)
             time.sleep(3)
             
         return chr(self.data.pop(0))
