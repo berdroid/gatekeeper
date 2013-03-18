@@ -23,13 +23,7 @@ class SerialConnection (AbstractConnection):
         """
         beginn communication by triggering DTR
         """
-        try:
-            baudrate = self.params.baudrate
-            
-        except AttributeError:
-            baudrate = 9600
-            
-        self.port = Serial(self.portname, baudrate)
+        self.port = Serial(self.params.device, self.params.baudrate)
         self.port.timeout = 0.015
         self.port.writeTimeout = 0.25
         self.port.open()

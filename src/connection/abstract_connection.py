@@ -13,12 +13,12 @@ class AbstractConnection (object):
     abstract super class for connection objects
     """
 
-    def __init__(self, name, portname, params, logger):
+    def __init__(self, name, params, logger):
         self.connection_name = name
-        self.connection_id = None
-        self.portname = portname
         self.params = params
         self.log = logger
+        
+        self.log.log('Connection %s@%s: %s' % (self.name, self.connection_name, self.params))
         
         self.port = None
 
