@@ -1,6 +1,6 @@
 
 
-import factory
+from lib import factory
 
  
  
