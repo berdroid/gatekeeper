@@ -1,3 +1,8 @@
+'''
+Created on Mar 18, 2013
+
+@author: ber
+'''
 import sys
 import datetime
 
