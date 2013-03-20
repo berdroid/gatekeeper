@@ -6,7 +6,7 @@ Created on Mar 18, 2013
 
 
 listeners = [ ]
-
+gates = [ ]
 
 
 class ListenerMainGate (object):
@@ -34,3 +34,16 @@ class ListenerBackDoor (object):
 
 
 listeners.append(ListenerBackDoor)
+
+
+
+class GateMainGate (object):
+    
+    gate_type = 'sim'
+    gate_name = 'main_gate'
+    gate_params = { }
+    
+    
+gates.append(GateMainGate)
+
+
