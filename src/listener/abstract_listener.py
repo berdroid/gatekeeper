@@ -19,7 +19,7 @@ class AbstractListener (multiprocessing.Process):
         '''
         Constructor
         '''
-        super(AbstractListener, self).__init__()
+        super(AbstractListener, self).__init__(name=self.name + '@' + gate)
         self.gate = gate
         self.port = port
         self.queue = queue
@@ -46,6 +46,8 @@ class AbstractListener (multiprocessing.Process):
                     { 'name':self.name, 'gate':self.gate, 'msg':msg }
                 )
                 
+        self.port.close()
+        
             
     def stop(self):
         self.active = False
