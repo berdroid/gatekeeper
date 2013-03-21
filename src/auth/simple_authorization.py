@@ -10,7 +10,7 @@ from auth import IdentificationFail, AuthorizationFail, AuthorizationFactory
 
 
 
-
+@AuthorizationFactory.register
 class SimpleAuthorization (AbstractAuthorizationm):
     '''
     simple authorization instance: allow all known tokens in list at all times
@@ -49,10 +49,6 @@ class SimpleAuthorization (AbstractAuthorizationm):
             return True
         
         raise AuthorizationFail('Person not allowed in : %s' % identity)
-    
-    
-AuthorizationFactory.register(SimpleAuthorization)
-
 
     
     

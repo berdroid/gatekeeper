@@ -8,7 +8,7 @@ from listener import ListenerFactory
 
 
 
-
+@ListenerFactory.register
 class RfidListener (AbstractListener):
     '''
     listener for RFID tags
@@ -26,6 +26,4 @@ class RfidListener (AbstractListener):
             
         return self.NAME + '(' + '-'.join(l) + ')'
 
-
-ListenerFactory.register(RfidListener)
 

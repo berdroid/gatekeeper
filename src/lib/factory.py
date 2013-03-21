@@ -23,6 +23,7 @@ class Factory (object):
         register an item class
         '''
         self.items[item.name] = item
+        return item
         
         
     

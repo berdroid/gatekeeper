@@ -11,6 +11,7 @@ from lib.dict_obj import DictObj
 
 
 
+@ConnectionFactory.register
 class SimConnection (AbstractConnection):
     '''
     a simulaton
@@ -36,4 +37,4 @@ class SimConnection (AbstractConnection):
         return chr(self.data.pop(0))
 
 
-ConnectionFactory.register(SimConnection)
+
