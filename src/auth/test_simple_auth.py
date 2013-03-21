@@ -7,7 +7,7 @@ import unittest
 import lib.logger
 from auth.simple_authorization import SimpleAuthorization
 import datetime
-from auth import IdentificationFail
+from auth import IdentificationFail, AuthorizationFail
 
 
 class Test(unittest.TestCase):
@@ -21,7 +21,7 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         self.log = lib.logger.StringIOLogger()
-        auth_params = { 'tokens':(self.GOOD_TOKEN, ) }
+        auth_params = { 'tokens':(self.GOOD_TOKEN,), 'gates':(self.GOOD_GATE,) }
         self.auth = SimpleAuthorization(params = auth_params, logger = self.log)
 
 
@@ -47,6 +47,35 @@ class Test(unittest.TestCase):
             self.auth.check(
                 token=self.BAAD_TOKEN,
                 gate=self.GOOD_GATE, 
+                event_ts=datetime.datetime.now(),
+            )
+
+
+    def test_add_token(self):
+        with self.assertRaises(IdentificationFail):
+            self.auth.check(
+                token=self.BAAD_TOKEN,
+                gate=self.GOOD_GATE, 
+                event_ts=datetime.datetime.now(),
+            )
+
+        self.auth.add_tokens(self.BAAD_TOKEN)
+        
+        self.assertTrue(
+            self.auth.check(
+                token=self.BAAD_TOKEN, 
+                gate=self.GOOD_GATE, 
+                event_ts=datetime.datetime.now()
+            ), 
+            'Failed to accept added token'
+        )
+
+
+    def test_bad_gate(self):
+        with self.assertRaises(AuthorizationFail):
+            self.auth.check(
+                token=self.GOOD_TOKEN,
+                gate=self.BAAD_GATE, 
                 event_ts=datetime.datetime.now(),
             )
         

@@ -21,6 +21,7 @@ class SimpleAuthorization (AbstractAuthorizationm):
 
     DEFAULTS = DictObj(
         tokens = ( ),
+        gates = ( ),
     )
     
     
@@ -31,6 +32,7 @@ class SimpleAuthorization (AbstractAuthorizationm):
         super(SimpleAuthorization, self).__init__(*args, **kwargs)
         
         self.valid_tokens = set(self.params.tokens)
+        self.valid_gates = set(self.params.gates)
         
     
     def add_tokens(self, *tokens):
@@ -46,7 +48,10 @@ class SimpleAuthorization (AbstractAuthorizationm):
     
     def authorize(self, identity, gate, event_ts):
         if identity == 'Someone':
-            return True
+            if not self.valid_gates:
+                return True
+            elif gate in self.valid_gates:
+                return True
         
         raise AuthorizationFail('Person not allowed in : %s' % identity)
 
