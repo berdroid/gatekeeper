@@ -10,10 +10,11 @@ class Factory (object):
     '''
 
 
-    def __init__(self):
+    def __init__(self, base=object):
         '''
         Instantiate the factory
         '''
+        self.base = base
         self.items = { }
         
         
@@ -22,6 +23,9 @@ class Factory (object):
         '''
         register an item class
         '''
+        if not issubclass(item, self.base):
+            raise TypeError('%s will only register sub classes of %s' % (self.__class__, self.base))
+        
         self.items[item.name] = item
         return item
         

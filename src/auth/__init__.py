@@ -14,8 +14,9 @@ class AuthorizationFail (Exception):
 
 
 from lib import factory
+from auth.abstract_authorization import AbstractAuthorizationm
 
 
-AuthorizationFactory = factory.Factory()
+AuthorizationFactory = factory.Factory(base=AbstractAuthorizationm)
 
 import simple_authorization
