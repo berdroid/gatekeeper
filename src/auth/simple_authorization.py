@@ -36,7 +36,7 @@ class SimpleAuthorization (AbstractAuthorizationm):
         
     
     def add_tokens(self, *tokens):
-        self.valid_tokens.update(set(*tokens))
+        self.valid_tokens.update(set(tokens))
         
         
     def identify(self, token):
