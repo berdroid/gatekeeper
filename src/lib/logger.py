@@ -6,6 +6,7 @@ Created on Mar 18, 2013
 import sys
 import datetime
 import StringIO
+import syslog
 
 
 class Logger (object):
@@ -16,7 +17,16 @@ class Logger (object):
     
     def log(self, *args):
         ts = datetime.datetime.now().isoformat()
-        self.out.write(ts + ': ' + ' '.join(args) + '\n')
+        msg = self.msg(args)
+        self.write_log(ts, msg)
+        
+        
+    def msg(self, args):
+        return ' '.join(args) + '\n'
+    
+    
+    def write_log(self, ts, msg):
+        self.out.write(ts + ': ' + msg)
         
         
     def close(self):
@@ -37,4 +47,28 @@ class StringIOLogger (Logger):
         
     def value(self):
         return self.io.getvalue()
+        
+
+
+class SyslogLogger (Logger):
+    
+    def __init__(self, logfile=None):
+        super(SyslogLogger, self).__init__(logfile=logfile)
+
+
+    def open_syslog(self, ident=None, facility=None):
+        syslog.openlog(ident=ident, facility=facility)
+        
+        
+    def write_log(self, ts, msg):
+        if self.out is not None:
+            super(SyslogLogger, self).write_log(ts, msg)
+            
+        syslog.syslog(msg)
+
+
+    def close(self):
+        syslog.closelog()
+        
+        
         
