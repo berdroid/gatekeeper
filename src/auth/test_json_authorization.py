@@ -74,6 +74,15 @@ class Test(unittest.TestCase):
             )
 
 
+    def test_bad_gate(self):
+        with self.assertRaises(AuthorizationFail):
+            self.auth.check(
+                token=self.GOOD_TOKEN,
+                gate=self.BAAD_GATE, 
+                event_ts=datetime.datetime.now(),
+            )
+
+
 
 
 if __name__ == "__main__":
