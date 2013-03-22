@@ -9,6 +9,7 @@ from auth.json_authorization import JsonAuthorization
 import datetime
 from auth import IdentificationFail, AuthorizationFail
 import tempfile
+import os
 
 
 class Test(unittest.TestCase):
@@ -47,6 +48,10 @@ class Test(unittest.TestCase):
         del self.auth
         self.log.close()
         del self.log
+        os.close(self.fd)
+        os.remove(self.file_name)
+        self.fd = None
+        self.file_name = None
         
         
     def write_auth(self, auth):
