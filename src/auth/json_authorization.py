@@ -8,6 +8,8 @@ from auth.abstract_authorization import AbstractAuthorizationm
 from auth import AuthorizationFactory, IdentificationFail, AuthorizationFail
 from lib.dict_obj import DictObj
 import json
+import datetime
+import time
 
 
 
@@ -43,6 +45,19 @@ class JsonAuthorization (AbstractAuthorizationm):
         for person in self.auth:
             for token in person.tokens:
                 self.persons[token] = person
+                
+                
+    def check_time(self, time_spec, ts):
+        if not ts.isoweekday() in time_spec.weekdays:
+            return False
+        
+        begin = datetime.datetime.strptime(time_spec.begin, '%H:%M').time()
+        end = datetime.datetime.strptime(time_spec.end, '%H:%M').time()
+        
+        if begin <= ts.time() <= end:
+            return True
+        
+        return False
 
 
     def identify(self, token):
@@ -62,7 +77,8 @@ class JsonAuthorization (AbstractAuthorizationm):
             return True
         
         for time  in person.times:
-            pass
+            if self.check_time(time, event_ts):
+                return True
         
         raise AuthorizationFail('Person %s not allowed on gate: %s at %s' % (person['name'], gate, event_ts))
 
