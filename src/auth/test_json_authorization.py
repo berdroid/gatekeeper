@@ -27,6 +27,16 @@ class Test(unittest.TestCase):
             "name": "%(GOOD_NAME)s",
             "gates": [ "%(GOOD_GATE)s" ],
             "tokens": [ "%(GOOD_TOKEN)s", "ghi-012"]
+        },
+        {
+            "name": "Emil",
+            "gates": [ "%(GOOD_GATE)s" ],
+            "tokens": [ "TokenEmil1", "ghi-932"],
+            "times": [
+                { "weekdays": [ 1, 2, 3, 4, 5 ], "begin": "09:00", "end": "12:00" },
+                { "weekdays": [ 1, 2, 3, 4, 5 ], "begin": "13:00", "end": "17:00" },
+                { "weekdays": [ 6, 7 ], "begin": "09:15", "end": "10:00" }
+            ]
         }
     ]
     """ % dict(
@@ -57,6 +67,12 @@ class Test(unittest.TestCase):
     def write_auth(self, auth):
         with file(self.file_name, 'w') as f:
             f.write(auth)
+            
+            
+    def make_ts(self, weekday, hours, minutes):
+        d = datetime.date(2013, 3, 3) + datetime.timedelta(days=weekday)
+        t = datetime.time(hours, minutes)
+        return datetime.datetime.combine(d, t)
 
 
     def test_accepted_token(self):
@@ -86,8 +102,65 @@ class Test(unittest.TestCase):
                 gate=self.BAAD_GATE, 
                 event_ts=datetime.datetime.now(),
             )
+            
 
+    def test_good_time1(self):
+        self.assertTrue(
+            self.auth.check(
+                token='TokenEmil1',
+                gate=self.GOOD_GATE, 
+                event_ts=self.make_ts(1, 10, 22)
+            ), 
+        )
+            
 
+    def test_bad_time1(self):
+        with self.assertRaises(AuthorizationFail):
+            self.auth.check(
+                token='TokenEmil1',
+                gate=self.GOOD_GATE, 
+                event_ts=self.make_ts(6, 10, 22)
+            ) 
+            
+
+    def test_good_time2(self):
+        self.assertTrue(
+            self.auth.check(
+                token='TokenEmil1',
+                gate=self.GOOD_GATE, 
+                event_ts=self.make_ts(1, 17, 0)
+            ), 
+        )
+            
+
+    def test_bad_time2(self):
+        with self.assertRaises(AuthorizationFail):
+            self.auth.check(
+                token='TokenEmil1',
+                gate=self.GOOD_GATE, 
+                event_ts=self.make_ts(1, 17, 1)
+            )
+            
+
+    def test_good_time3(self):
+        self.assertTrue(
+            self.auth.check(
+                token='TokenEmil1',
+                gate=self.GOOD_GATE, 
+                event_ts=self.make_ts(1, 9, 15)
+            ), 
+        )
+            
+
+    def test_bad_time3(self):
+        self.assertTrue(
+            self.auth.check(
+                token='TokenEmil1',
+                gate=self.GOOD_GATE, 
+                event_ts=self.make_ts(1, 9, 14)
+            ), 
+        )
+        
 
 
 if __name__ == "__main__":
