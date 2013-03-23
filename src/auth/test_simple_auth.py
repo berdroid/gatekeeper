@@ -12,8 +12,9 @@ from auth import IdentificationFail, AuthorizationFail
 
 class Test(unittest.TestCase):
 
-    GOOD_TOKEN = 'em4100(06-34-00-45-8e)'
-    BAAD_TOKEN = 'em4100(06-34-00-47-8e)'
+    KIND = 'em4100'
+    GOOD_TOKEN = '06-34-00-45-8e'
+    BAAD_TOKEN = '06-34-00-47-8e'
     
     GOOD_GATE = 'main_gate'
     BAAD_GATE = 'back_door'
@@ -21,7 +22,7 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         self.log = lib.logger.StringIOLogger()
-        auth_params = { 'tokens':(self.GOOD_TOKEN,), 'gates':(self.GOOD_GATE,) }
+        auth_params = { 'tokens':((self.KIND, self.GOOD_TOKEN),), 'gates':(self.GOOD_GATE,) }
         self.auth = SimpleAuthorization(params = auth_params, logger = self.log)
 
 
@@ -34,7 +35,7 @@ class Test(unittest.TestCase):
     def test_accepted_token(self):
         self.assertTrue(
             self.auth.check(
-                token=self.GOOD_TOKEN, 
+                token=(self.KIND, self.GOOD_TOKEN), 
                 gate=self.GOOD_GATE, 
                 event_ts=datetime.datetime.now()
             ), 
@@ -45,7 +46,7 @@ class Test(unittest.TestCase):
     def test_unknown_token(self):
         with self.assertRaises(IdentificationFail):
             self.auth.check(
-                token=self.BAAD_TOKEN,
+                token=(self.KIND, self.BAAD_TOKEN), 
                 gate=self.GOOD_GATE, 
                 event_ts=datetime.datetime.now(),
             )
@@ -54,16 +55,16 @@ class Test(unittest.TestCase):
     def test_add_token(self):
         with self.assertRaises(IdentificationFail):
             self.auth.check(
-                token=self.BAAD_TOKEN,
+                token=(self.KIND, self.BAAD_TOKEN), 
                 gate=self.GOOD_GATE, 
                 event_ts=datetime.datetime.now(),
             )
 
-        self.auth.add_tokens(self.BAAD_TOKEN)
+        self.auth.add_tokens((self.KIND, self.BAAD_TOKEN))
         
         self.assertTrue(
             self.auth.check(
-                token=self.BAAD_TOKEN, 
+                token=(self.KIND, self.BAAD_TOKEN), 
                 gate=self.GOOD_GATE, 
                 event_ts=datetime.datetime.now()
             ), 
@@ -74,7 +75,7 @@ class Test(unittest.TestCase):
     def test_bad_gate(self):
         with self.assertRaises(AuthorizationFail):
             self.auth.check(
-                token=self.GOOD_TOKEN,
+                token=(self.KIND, self.GOOD_TOKEN), 
                 gate=self.BAAD_GATE, 
                 event_ts=datetime.datetime.now(),
             )

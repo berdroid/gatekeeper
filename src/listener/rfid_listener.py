@@ -15,7 +15,7 @@ class RfidListener (AbstractListener):
     '''
     name = 'rfid_em4100'
 
-    NAME = 'em4100'
+    KIND = 'em4100'
     SIZE = 5
     
 
@@ -24,6 +24,6 @@ class RfidListener (AbstractListener):
         for _i in xrange(self.SIZE):
             l.append('%02x' % ord(self.port.read()))
             
-        return self.NAME + '(' + '-'.join(l) + ')'
+        return self.KIND, '-'.join(l)
 
 

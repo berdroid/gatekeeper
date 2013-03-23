@@ -33,17 +33,18 @@ class SimpleAuthorization (AbstractAuthorizationm):
         
         self.valid_tokens = set(self.params.tokens)
         self.valid_gates = set(self.params.gates)
+        print self.valid_tokens
         
     
     def add_tokens(self, *tokens):
         self.valid_tokens.update(set(tokens))
         
         
-    def identify(self, token):
-        if token in self.valid_tokens:
+    def identify(self, token_key):
+        if token_key in self.valid_tokens:
             return 'Someone'
         
-        raise IdentificationFail('Could not identify person for token %s' % token)
+        raise IdentificationFail('Could not identify person for token %s' % str(token_key))
     
     
     def authorize(self, identity, gate, event_ts):

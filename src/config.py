@@ -41,7 +41,7 @@ class Authorization (object):
     
     auth_type = 'simple'
     
-    auth_params = { 'tokens':('em4100(06-34-00-45-8e)', ) }
+    auth_params = { 'tokens':(('em4100','06-34-00-45-8e'), ) }
     
 
 
