@@ -9,6 +9,7 @@ listeners = [ ]
 gates = [ ]
 
 
+@listeners.append
 class ListenerMainGate (object):
 
     listener_name = 'rfid_em4100'
@@ -19,10 +20,8 @@ class ListenerMainGate (object):
     port_params = { 'device':'/dev/ttyS0', 'baudrate':9600, 'data':[0x06, 0x34, 0x00, 0x45, 0x8e,  0x06, 0x34, 0x00, 0x67, 0x3c] }
 
 
-listeners.append(ListenerMainGate)
 
-
-
+@listeners.append
 class ListenerBackDoor (object):
 
     listener_name = 'rfid_em4100'
@@ -31,9 +30,6 @@ class ListenerBackDoor (object):
     
     port_type = 'sim'
     port_params = { 'data':[0x06, 0x34, 0x00, 0x67, 0x3c] }
-
-
-listeners.append(ListenerBackDoor)
 
 
 
@@ -45,13 +41,11 @@ class Authorization (object):
     
 
 
+@gates.append
 class GateMainGate (object):
     
     gate_type = 'sim'
     gate_name = 'main_gate'
     gate_params = { }
-    
-    
-gates.append(GateMainGate)
 
 
