@@ -20,3 +20,5 @@ from auth.abstract_authorization import AbstractAuthorizationm
 AuthorizationFactory = factory.Factory(base=AbstractAuthorizationm)
 
 import simple_authorization
+import json_authorization
+

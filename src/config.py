@@ -35,10 +35,8 @@ class ListenerBackDoor (object):
 
 class Authorization (object):
     
-    auth_type = 'simple'
-    
-    auth_params = { 'tokens':(('em4100','06-34-00-45-8e'), ) }
-    
+    auth_type = 'json_file'
+    auth_params = { 'json_file': 'auth.json' }
 
 
 @gates.append

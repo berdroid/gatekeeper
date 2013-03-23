@@ -101,7 +101,7 @@ class JsonAuthorization (AbstractAuthorizationm):
             if self.check_time(time, event_ts):
                 return True
         
-        raise AuthorizationFail('Person %s not allowed on gate: %s at %s' % (person['name'], gate, event_ts))
+        raise AuthorizationFail('Person %s not allowed on gate: %s at %s' % (person.name, gate, event_ts))
 
     
 
