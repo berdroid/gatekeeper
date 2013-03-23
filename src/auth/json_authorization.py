@@ -42,14 +42,17 @@ class JsonAuthorization (AbstractAuthorizationm):
         with file(self.params.json_file, 'r') as auth_file:
             self.auth = json.load(auth_file, object_hook=DictObj)
             
-        # token -> person
+        # token_key -> token
         self.tokens = dict()
         
-        # build index token -> person
-        for person in self.auth:
-            for token in person.tokens:
-                token.person = person
-                self.tokens[self.token_key(token)] = token
+        # person_id -> person
+        self.persons = dict()
+        
+        for person in self.auth.persons:
+            self.persons[person.id] = person
+            
+        for token in self.auth.tokens:
+            self.tokens[self.token_key(token)] = token
                 
                 
     def check_time(self, time_spec, ts):
@@ -71,11 +74,14 @@ class JsonAuthorization (AbstractAuthorizationm):
         if token_key in self.tokens:
             return self.tokens[token_key]
         
-        raise IdentificationFail('Could not identify person for token %s' % str(token_key))
+        raise IdentificationFail('Could not identify token %s' % str(token_key))
 
 
     def authorize(self, token, gate, event_ts):
-        person = token.person
+        try:
+            person = self.persons[token.person_id]
+        except KeyError:
+            raise IdentificationFail('Could not identify person for token %s' % str(self.token_key(token)))
         
         if person.blocked:
             raise AuthorizationFail('Person %s blocked' % (person.name,))
