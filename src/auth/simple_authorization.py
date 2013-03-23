@@ -42,19 +42,21 @@ class SimpleAuthorization (AbstractAuthorizationm):
         
     def identify(self, token_key):
         if token_key in self.valid_tokens:
-            return 'Someone'
+            token = DictObj(name='token_name', kind=token_key[0], id=token_key[1], blocked=False)
+            person = DictObj(name='Someone', blocked=False)
+            return token, person
         
         raise IdentificationFail('Could not identify person for token %s' % str(token_key))
     
     
-    def authorize(self, identity, gate, event_ts):
-        if identity == 'Someone':
+    def authorize(self, token, person, gate, event_ts):
+        if not person.blocked:
             if not self.valid_gates:
                 return True
             elif gate in self.valid_gates:
                 return True
         
-        raise AuthorizationFail('Person not allowed in : %s' % identity)
+        raise AuthorizationFail('Person not allowed in : %s' % person)
 
     
     

@@ -72,17 +72,19 @@ class JsonAuthorization (AbstractAuthorizationm):
         self.load_auth_data()
         
         if token_key in self.tokens:
-            return self.tokens[token_key]
+            token = self.tokens[token_key]
+        
+            try:
+                person = self.persons[token.person_id]    
+                return token, person
+            
+            except KeyError:
+                raise IdentificationFail('Could not identify person for token %s' % str(self.token_key(token)))
         
         raise IdentificationFail('Could not identify token %s' % str(token_key))
 
 
-    def authorize(self, token, gate, event_ts):
-        try:
-            person = self.persons[token.person_id]
-        except KeyError:
-            raise IdentificationFail('Could not identify person for token %s' % str(self.token_key(token)))
-        
+    def authorize(self, token, person, gate, event_ts):
         if person.blocked:
             raise AuthorizationFail('Person %s blocked' % (person.name,))
         

@@ -41,13 +41,13 @@ class AbstractAuthorizationm (object):
             raise AuthError('Authorization type %s is missing required parameters' % (self.name,))
 
 
-    def check(self, token, gate, event_ts):
-        identity = self.identify(token)
-        result = self.authorize(identity, gate, event_ts)
-        return result
+    def check(self, token_key, gate, event_ts):
+        token, person = self.identify(token_key)
+        result = self.authorize(token, person, gate, event_ts)
+        return result, token, person
     
     
-    def identify(self, token):
+    def identify(self, token_key):
         raise NotImplementedError()
     
     
