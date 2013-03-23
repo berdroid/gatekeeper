@@ -14,9 +14,11 @@ import os
 
 class Test(unittest.TestCase):
 
-    GOOD_TOKEN = 'em4100(06-34-00-45-8e)'
     GOOD_NAME  = 'Bernhard'
-    BAAD_TOKEN = 'em4100(06-34-00-47-8e)'
+
+    KIND = 'em4100'
+    GOOD_TOKEN = '06-34-00-45-8e'
+    BAAD_TOKEN = '06-34-00-47-8e'
     
     GOOD_GATE = 'main_gate'
     BAAD_GATE = 'back_door'
@@ -24,25 +26,40 @@ class Test(unittest.TestCase):
     AUTH_FILE = """
     [
         {
-            "name": "%(GOOD_NAME)s",
+            "name": "Bernhard",
+            "blocked": false,
             "gates": [ "%(GOOD_GATE)s" ],
-            "tokens": [ "%(GOOD_TOKEN)s", "ghi-012"]
+            "tokens": [ 
+                { "name": "101", "kind": "em4100", "id": "06-34-00-45-8e", "blocked": false },
+                { "name": "102", "kind": "em4100", "id": "ghi-012", "blocked": true }
+            ]
         },
         {
             "name": "Emil",
+            "blocked": false,
             "gates": [ "%(GOOD_GATE)s" ],
-            "tokens": [ "TokenEmil1", "ghi-932"],
+            "tokens": [
+                { "name": "103", "kind": "em4100", "id": "TokenEmil1", "blocked": false },
+                { "name": "104", "kind": "em4100", "id": "ghi-932", "blocked": false }
+            ],
             "times": [
                 { "weekdays": [ 1, 2, 3, 4, 5 ], "begin": "09:00", "end": "12:00" },
                 { "weekdays": [ 1, 2, 3, 4, 5 ], "begin": "13:00", "end": "17:00" },
                 { "weekdays": [ 6, 7 ], "begin": "09:15", "end": "10:00" }
+            ]
+        },
+        {
+            "name": "Emilly",
+            "blocked": true,
+            "gates": [ "%(GOOD_GATE)s" ],
+            "tokens": [
+                { "name": "103", "kind": "em4100", "id": "TokenEmilly1", "blocked": false }
             ]
         }
     ]
     """ % dict(
         GOOD_NAME=GOOD_NAME,
         GOOD_GATE=GOOD_GATE,
-        GOOD_TOKEN=GOOD_TOKEN
     )
     
 
@@ -78,7 +95,7 @@ class Test(unittest.TestCase):
     def test_accepted_token(self):
         self.assertTrue(
             self.auth.check(
-                token=self.GOOD_TOKEN, 
+                token=(self.KIND, self.GOOD_TOKEN), 
                 gate=self.GOOD_GATE, 
                 event_ts=datetime.datetime.now()
             ), 
@@ -86,10 +103,19 @@ class Test(unittest.TestCase):
         )
 
 
+    def test_blocked_token(self):
+        with self.assertRaises(AuthorizationFail):
+            self.auth.check(
+                token=(self.KIND, 'ghi-012'),
+                gate=self.GOOD_GATE, 
+                event_ts=datetime.datetime.now(),
+            )
+
+
     def test_unknown_token(self):
         with self.assertRaises(IdentificationFail):
             self.auth.check(
-                token=self.BAAD_TOKEN,
+                token=(self.KIND, self.BAAD_TOKEN),
                 gate=self.GOOD_GATE, 
                 event_ts=datetime.datetime.now(),
             )
@@ -98,7 +124,7 @@ class Test(unittest.TestCase):
     def test_bad_gate(self):
         with self.assertRaises(AuthorizationFail):
             self.auth.check(
-                token=self.GOOD_TOKEN,
+                token=(self.KIND, self.GOOD_TOKEN),
                 gate=self.BAAD_GATE, 
                 event_ts=datetime.datetime.now(),
             )
@@ -107,7 +133,7 @@ class Test(unittest.TestCase):
     def test_good_time1(self):
         self.assertTrue(
             self.auth.check(
-                token='TokenEmil1',
+                token=(self.KIND, 'TokenEmil1'),
                 gate=self.GOOD_GATE, 
                 event_ts=self.make_ts(1, 10, 22)
             ), 
@@ -117,7 +143,7 @@ class Test(unittest.TestCase):
     def test_bad_time1(self):
         with self.assertRaises(AuthorizationFail):
             self.auth.check(
-                token='TokenEmil1',
+                token=(self.KIND, 'TokenEmil1'),
                 gate=self.GOOD_GATE, 
                 event_ts=self.make_ts(6, 10, 22)
             ) 
@@ -126,7 +152,7 @@ class Test(unittest.TestCase):
     def test_good_time2(self):
         self.assertTrue(
             self.auth.check(
-                token='TokenEmil1',
+                token=(self.KIND, 'TokenEmil1'),
                 gate=self.GOOD_GATE, 
                 event_ts=self.make_ts(1, 17, 0)
             ), 
@@ -136,7 +162,7 @@ class Test(unittest.TestCase):
     def test_bad_time2(self):
         with self.assertRaises(AuthorizationFail):
             self.auth.check(
-                token='TokenEmil1',
+                token=(self.KIND, 'TokenEmil1'),
                 gate=self.GOOD_GATE, 
                 event_ts=self.make_ts(1, 17, 1)
             )
@@ -145,7 +171,7 @@ class Test(unittest.TestCase):
     def test_good_time3(self):
         self.assertTrue(
             self.auth.check(
-                token='TokenEmil1',
+                token=(self.KIND, 'TokenEmil1'),
                 gate=self.GOOD_GATE, 
                 event_ts=self.make_ts(1, 9, 15)
             ), 
@@ -155,11 +181,20 @@ class Test(unittest.TestCase):
     def test_bad_time3(self):
         self.assertTrue(
             self.auth.check(
-                token='TokenEmil1',
+                token=(self.KIND, 'TokenEmil1'),
                 gate=self.GOOD_GATE, 
                 event_ts=self.make_ts(1, 9, 14)
             ), 
         )
+            
+
+    def test_blocked_person(self):
+        with self.assertRaises(AuthorizationFail):
+            self.auth.check(
+                token=(self.KIND, 'TokenEmilly1'),
+                gate=self.GOOD_GATE, 
+                event_ts=self.make_ts(1, 17, 1)
+            )
         
 
 

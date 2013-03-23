@@ -32,6 +32,10 @@ class JsonAuthorization (AbstractAuthorizationm):
         set up the authorization instance
         '''
         super(JsonAuthorization, self).__init__(*args, **kwargs)
+        
+        
+    def token_key(self, token):
+        return token.kind, token.id
 
 
     def load_auth_data(self):
@@ -39,12 +43,13 @@ class JsonAuthorization (AbstractAuthorizationm):
             self.auth = json.load(auth_file, object_hook=DictObj)
             
         # token -> person
-        self.persons = dict()
+        self.tokens = dict()
         
         # build index token -> person
         for person in self.auth:
             for token in person.tokens:
-                self.persons[token] = person
+                token.person = person
+                self.tokens[self.token_key(token)] = token
                 
                 
     def check_time(self, time_spec, ts):
@@ -60,16 +65,24 @@ class JsonAuthorization (AbstractAuthorizationm):
         return False
 
 
-    def identify(self, token):
+    def identify(self, token_key):
         self.load_auth_data()
         
-        if token in self.persons:
-            return self.persons[token]
+        if token_key in self.tokens:
+            return self.tokens[token_key]
         
-        raise IdentificationFail('Could not identify person for token %s' % token)
+        raise IdentificationFail('Could not identify person for token %s' % str(token_key))
 
 
-    def authorize(self, person, gate, event_ts):
+    def authorize(self, token, gate, event_ts):
+        person = token.person
+        
+        if person.blocked:
+            raise AuthorizationFail('Person %s blocked' % (person.name,))
+        
+        if token.blocked:
+            raise AuthorizationFail('Token %s blocked' % (token.name,))
+        
         if not gate in person['gates']:
             raise AuthorizationFail('Person %s not allowed on gate: %s' % (person.name, gate))
         
