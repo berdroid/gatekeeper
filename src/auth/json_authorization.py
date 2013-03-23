@@ -34,14 +34,14 @@ class JsonAuthorization (AbstractAuthorizationm):
 
     def load_auth_data(self):
         with file(self.params.json_file, 'r') as auth_file:
-            self.auth = json.load(auth_file)
+            self.auth = json.load(auth_file, object_hook=DictObj)
             
         # token -> person
         self.persons = dict()
         
         # build index token -> person
         for person in self.auth:
-            for token in person['tokens']:
+            for token in person.tokens:
                 self.persons[token] = person
 
 
@@ -56,10 +56,13 @@ class JsonAuthorization (AbstractAuthorizationm):
 
     def authorize(self, person, gate, event_ts):
         if not gate in person['gates']:
-            raise AuthorizationFail('Person %s not allowed on gate: %s' % (person['name'], gate))
+            raise AuthorizationFail('Person %s not allowed on gate: %s' % (person.name, gate))
         
         if not 'times' in person:
             return True
+        
+        for time  in person.times:
+            pass
         
         raise AuthorizationFail('Person %s not allowed on gate: %s at %s' % (person['name'], gate, event_ts))
 
