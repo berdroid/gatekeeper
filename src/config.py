@@ -42,8 +42,8 @@ class Authorization (object):
 @gates.append
 class GateMainGate (object):
     
-    gate_type = 'sim'
+    gate_type = 'gpio'
     gate_name = 'main_gate'
-    gate_params = { }
+    gate_params = { 'hold_time': 5, 'gpio': 'gpio2' }
 
 
