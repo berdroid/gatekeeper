@@ -5,13 +5,14 @@ Created on Mar 18, 2013
 '''
 
 from connection import ConnectionFactory
-from abstract_connection import AbstractConnection
+from connection.abstract_connection import AbstractConnection
 
 from serial import Serial, SerialTimeoutException
 from lib.dict_obj import DictObj
 
 
 
+@ConnectionFactory.register
 class SerialConnection (AbstractConnection):
     """
     wrapper around connections using a serial port via pySerial
@@ -33,7 +34,6 @@ class SerialConnection (AbstractConnection):
         self.port = Serial(self.params.device, self.params.baudrate)
         self.port.timeout = 0.015
         self.port.writeTimeout = 0.25
-        self.port.open()
 
         self.init_string()
 
@@ -52,5 +52,17 @@ class SerialConnection (AbstractConnection):
             pass
 
 
-ConnectionFactory.register(SerialConnection)
 
+if __name__=='__main__':
+    import lib.logger
+    
+    l = lib.logger.Logger()
+    
+    c = ConnectionFactory('serial', 'gate_1', { 'device':'/dev/ttyAMA0', 'baudrate':9600, }, l)
+    c.open()
+    
+    while True:
+        data = c.read()
+        if len(data):
+            print '%02x' % ord(data)
+        
