@@ -32,7 +32,11 @@ class AbstractListener (multiprocessing.Process):
 
 
     def read_msg(self):
-        return (self.gate, self.read_id())
+        msg_id = self.read_id()
+        if msg_id is not None:
+            return (self.gate, msg_id)
+        else:
+            return None
 
 
     def run(self):

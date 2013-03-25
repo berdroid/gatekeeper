@@ -22,7 +22,11 @@ class RfidListener (AbstractListener):
     def read_id(self):
         l = [ ]
         for _i in xrange(self.SIZE):
-            l.append('%02x' % ord(self.port.read()))
+            data = self.port.read()
+            if len(data) == 1:
+                l.append('%02x' % ord(data))
+            else:
+                return None
             
         return self.KIND, '-'.join(l)
 
