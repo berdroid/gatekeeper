@@ -16,12 +16,12 @@ class ListenerMainGate (object):
     
     gate_name = 'main_gate'
     
-    port_type = 'sim'
-    port_params = { 'device':'/dev/ttyS0', 'baudrate':9600, 'data':[0x06, 0x34, 0x00, 0x45, 0x8e,  0x06, 0x34, 0x00, 0x67, 0x3c] }
+    port_type = 'serial'
+    port_params = { 'device':'/dev/ttyAMA0', 'baudrate':9600, }
 
 
 
-@listeners.append
+#@listeners.append
 class ListenerBackDoor (object):
 
     listener_name = 'rfid_em4100'
