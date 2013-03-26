@@ -1,5 +1,9 @@
 
 
+class ListenerError (Exception):
+    pass
+                     
+
 from lib import factory
 from listener.abstract_listener import AbstractListener
 

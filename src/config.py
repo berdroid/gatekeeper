@@ -13,6 +13,7 @@ gates = [ ]
 class ListenerMainGate (object):
 
     listener_name = 'rfid_em4100'
+    listener_params = { }
     
     gate_name = 'main_gate'
     
@@ -25,6 +26,7 @@ class ListenerMainGate (object):
 class ListenerBackDoor (object):
 
     listener_name = 'rfid_em4100'
+    listener_params = { }
     
     gate_name = 'back_door'
     
