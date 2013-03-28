@@ -7,6 +7,7 @@ from lib.dict_obj import DictObj
 from gate import GateError
 import multiprocessing
 import time
+import atexit
 
 
 
@@ -46,6 +47,7 @@ class AbstractGate (multiprocessing.Process):
 
         
     def run(self):
+        atexit.register(self.on_shutdown, self)
         self.open()
         
         while self.active:
@@ -81,6 +83,14 @@ class AbstractGate (multiprocessing.Process):
 
     def lock(self):
         self.log.log('Gate %(name)s on %(gate)s: locking' % 
+            { 'name':self.name, 'gate':self.gate_name, }
+        )
+        
+        
+    def on_shutdown(self):
+        self.lock()
+        self.close()
+        self.log.log('Gate %(name)s on %(gate)s: dhut down' % 
             { 'name':self.name, 'gate':self.gate_name, }
         )
 
