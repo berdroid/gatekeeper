@@ -14,4 +14,5 @@ GateFactory = factory.Factory(base=AbstractGate)
 
 import sim_gate
 import gpio_gate
+import pulse_gate
 
