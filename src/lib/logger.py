@@ -56,7 +56,7 @@ class SyslogLogger (Logger):
         super(SyslogLogger, self).__init__(logfile=logfile)
 
 
-    def open_syslog(self, ident=None, facility=None):
+    def open_syslog(self, ident='LOG', facility=syslog.LOG_LOCAL0):
         syslog.openlog(ident=ident, facility=facility)
         
         
