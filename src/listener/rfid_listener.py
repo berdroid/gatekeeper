@@ -5,6 +5,7 @@ Created on Mar 17, 2013
 '''
 from listener.abstract_listener import AbstractListener
 from listener import ListenerFactory
+from lib.dict_obj import DictObj
 
 
 
@@ -17,6 +18,11 @@ class RfidListener (AbstractListener):
 
     KIND = 'em4100'
     SIZE = 5
+    
+    DEFAULTS = DictObj(AbstractListener.DEFAULTS)
+    
+    DEFAULTS.update(
+    )
     
 
     def read_id(self):

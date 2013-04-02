@@ -4,7 +4,7 @@ Created on Mar 22, 2013
 @author: ber
 '''
 
-from auth.abstract_authorization import AbstractAuthorizationm
+from auth.abstract_authorization import AbstractAuthorization
 from auth import AuthorizationFactory, IdentificationFail, AuthorizationFail
 from lib.dict_obj import DictObj
 import json
@@ -14,7 +14,7 @@ import time
 
 
 @AuthorizationFactory.register
-class JsonAuthorization (AbstractAuthorizationm):
+class JsonAuthorization (AbstractAuthorization):
     '''
     simple authorization instance: allow all known tokens in list at all times
     '''
@@ -22,7 +22,9 @@ class JsonAuthorization (AbstractAuthorizationm):
     name = 'json_file'
 
 
-    DEFAULTS = DictObj(
+    DEFAULTS = DictObj(AbstractAuthorization.DEFAULTS)
+    
+    DEFAULTS.update(
         json_file = None,
     )
     

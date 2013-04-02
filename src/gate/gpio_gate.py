@@ -15,11 +15,11 @@ class GpioGate (AbstractGate):
     '''
     GPIO controlled gate
     '''
-    DEFAULTS = AbstractGate.DEFAULTS
+    DEFAULTS = DictObj(AbstractGate.DEFAULTS)
     
-    DEFAULTS.update(DictObj(
+    DEFAULTS.update(
         gpio = None,
-    ))
+    )
 
     name = 'gpio'
     

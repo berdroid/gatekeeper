@@ -9,7 +9,7 @@ from auth import AuthError
 
 
 
-class AbstractAuthorizationm (object):
+class AbstractAuthorization (object):
     '''
     abstract class for identification and authorization of access to a gate
     '''

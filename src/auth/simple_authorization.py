@@ -4,14 +4,14 @@ Created on Mar 21, 2013
 @author: ber
 '''
 
-from auth.abstract_authorization import AbstractAuthorizationm
+from auth.abstract_authorization import AbstractAuthorization
 from lib.dict_obj import DictObj
 from auth import IdentificationFail, AuthorizationFail, AuthorizationFactory
 
 
 
 @AuthorizationFactory.register
-class SimpleAuthorization (AbstractAuthorizationm):
+class SimpleAuthorization (AbstractAuthorization):
     '''
     simple authorization instance: allow all known tokens in list at all times
     '''
@@ -19,7 +19,9 @@ class SimpleAuthorization (AbstractAuthorizationm):
     name = 'simple'
 
 
-    DEFAULTS = DictObj(
+    DEFAULTS = DictObj(AbstractAuthorization.DEFAULTS)
+    
+    DEFAULTS.update(
         tokens = ( ),
         gates = ( ),
     )

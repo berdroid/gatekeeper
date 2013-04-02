@@ -14,10 +14,10 @@ class AuthorizationFail (Exception):
 
 
 from lib import factory
-from auth.abstract_authorization import AbstractAuthorizationm
+from auth.abstract_authorization import AbstractAuthorization
 
 
-AuthorizationFactory = factory.Factory(base=AbstractAuthorizationm)
+AuthorizationFactory = factory.Factory(base=AbstractAuthorization)
 
 import simple_authorization
 import json_authorization

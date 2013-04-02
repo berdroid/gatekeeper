@@ -18,12 +18,12 @@ class PulseGate (AbstractGate):
     '''
     GPIO pulse controlled gate
     '''
-    DEFAULTS = AbstractGate.DEFAULTS
+    DEFAULTS = DictObj(AbstractGate.DEFAULTS)
     
-    DEFAULTS.update(DictObj(
+    DEFAULTS.update(
         gpio = None,
         pulse = 0.010,
-    ))
+    )
 
     name = 'pulse'
     

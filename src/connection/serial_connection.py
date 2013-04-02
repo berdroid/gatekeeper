@@ -21,7 +21,9 @@ class SerialConnection (AbstractConnection):
     description = 'connect via serial port'
 
         
-    DEFAULTS = DictObj(
+    DEFAULTS = DictObj(AbstractConnection.DEFAULTS)
+    
+    DEFAULTS.update(
         device = None,
         baudrate = 9600
     )

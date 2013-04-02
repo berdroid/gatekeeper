@@ -19,7 +19,9 @@ class SimConnection (AbstractConnection):
     name = 'sim'
     description = 'simulated serial port'
 
-    DEFAULTS = DictObj(
+    DEFAULTS = DictObj(AbstractConnection.DEFAULTS)
+    
+    DEFAULTS.update(
         data = None
     )
     
