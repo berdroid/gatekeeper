@@ -19,6 +19,7 @@ class GpioGate (AbstractGate):
     
     DEFAULTS.update(
         gpio = None,
+        active_low = False,
     )
 
     name = 'gpio'
@@ -26,8 +27,14 @@ class GpioGate (AbstractGate):
     def open(self):
         self.gpio = '/sys/class/gpio/%(gpio)s/' % self.params
         
+        with file(self.gpio + 'active_low', 'w') as f:
+            f.write('1' if self.params.active_low else '0')
+        
         with file(self.gpio + 'direction', 'w') as f:
             f.write('out')
+
+        with file(self.gpio + 'value', 'w') as f:
+            f.write('0')
 
 
     def close(self):
