@@ -19,8 +19,9 @@ if __name__ == '__main__':
     gates =  { }
     
     q = multiprocessing.Queue()
-    l = logger.Logger()
-    #l = logger.SyslogLogger()
+
+    l = logger.SyslogLogger()
+    l.open_syslog('gatekeeper')
     
     a = config.Authorization
     auth = AuthorizationFactory(a.auth_type, a.auth_params, l)
