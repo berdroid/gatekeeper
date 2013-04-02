@@ -24,34 +24,32 @@ class GpioGate (AbstractGate):
 
     name = 'gpio'
     
+    
+    def gpio_write(self, fn, val):
+        with file(self.gpio + fn, 'w') as f:
+            f.write(val)
+
+    
     def open(self):
         self.gpio = '/sys/class/gpio/%(gpio)s/' % self.params
         
-        with file(self.gpio + 'active_low', 'w') as f:
-            f.write('1' if self.params.active_low else '0')
-        
-        with file(self.gpio + 'direction', 'w') as f:
-            f.write('out')
-
-        with file(self.gpio + 'value', 'w') as f:
-            f.write('0')
+        self.gpio_write('active_low', '1' if self.params.active_low else '0')
+        self.gpio_write('direction', 'out')
+        self.gpio_write('value', '0')
 
 
     def close(self):
-        with file(self.gpio + 'direction', 'w') as f:
-            f.write('in')
+        self.gpio_write('direction', 'in')
 
 
     def unlock(self):
         super(GpioGate, self).unlock()
-        with file(self.gpio + 'value', 'w') as f:
-            f.write('1')
+        self.gpio_write('value', '1')
 
 
     def lock(self):
         super(GpioGate, self).lock()
-        with file(self.gpio + 'value', 'w') as f:
-            f.write('0')
+        self.gpio_write('value', '0')
 
         
     
