@@ -39,6 +39,14 @@ class Authorization (object):
     
     auth_type = 'json_file'
     auth_params = { 'json_file': 'auth.json' }
+    
+    
+    
+class Logging (object):
+    
+    mail_params = { 'host':'***domain***', 'port':465, 'username':'***user***', 'password':'' }
+    syslog_params = { 'ident':'gatekeeper' }
+
 
 
 @gates.append
