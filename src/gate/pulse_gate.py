@@ -69,3 +69,20 @@ class PulseGate (AbstractGate):
             time.sleep(self.params.pulse)
 
         
+
+if __name__=='__main__':
+    from lib import logger
+    
+    l = logger.Logger()
+    gate_params = { 'hold_time': 5, 'gpio': 'gpio2', 'active_low': True, 'pulse': 0.01 }
+    pg = PulseGate('test', params=gate_params, event=None, logger=l)
+    
+    pg.open()
+    pg.unlock()
+    time.sleep(gate_params['hold_time'])
+    pg.lock()
+    pg.close()
+    
+    
+    
+    
