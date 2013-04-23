@@ -43,6 +43,16 @@ class AbstractListener (multiprocessing.Process):
             raise ListenerError('Listener type %s@%s is missing required parameters' % (self.name, self.gate))
         
         
+    def open(self):
+        if self.port:
+            self.port.open()
+
+
+    def close(self):
+        if self.port:
+            self.port.close()
+        
+        
     def read_id(self):
         raise NotImplemented()
 
@@ -58,8 +68,8 @@ class AbstractListener (multiprocessing.Process):
     def run(self):
         last_msg = None
         last_time = time.time()
-        
-        self.port.open()
+
+        self.open()        
         
         while self.active:
             msg = self.read_msg()
@@ -74,8 +84,8 @@ class AbstractListener (multiprocessing.Process):
                     
                 last_msg = msg
                 last_time = msg_time
-                
-        self.port.close()
+
+        self.close()
         
             
     def stop(self):
