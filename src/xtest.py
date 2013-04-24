@@ -22,11 +22,14 @@ if __name__ == '__main__':
 
     l = logger.SyslogLogger()
     l.open_syslog(**config.Logging.syslog_params)
-    
+     
     mail_logger = logger.SyslogMailLogger()
     mail_logger.open_syslog(**config.Logging.syslog_params)
     mail_logger.open_maillog(**config.Logging.mail_params)
-    
+
+#     l = logger.Logger()
+#     mail_logger = l
+        
     a = config.Authorization
     auth = AuthorizationFactory(a.auth_type, a.auth_params, l)
     
@@ -38,7 +41,11 @@ if __name__ == '__main__':
         
     
     for c in config.listeners:
-        port = ConnectionFactory(c.port_type, c.gate_name, c.port_params, l)
+        if hasattr(c, 'port_type') and c.port_type is not None:
+            port = ConnectionFactory(c.port_type, c.gate_name, c.port_params, l)
+        else:
+            port = None
+            
         p = ListenerFactory(c.listener_name, c.gate_name, port, q, c.listener_params, l)
         p.start()
 
@@ -51,7 +58,8 @@ if __name__ == '__main__':
             if token_key is not None:
                 authorized, token, person = auth.check(token_key, gate, datetime.datetime.now())
                 if authorized:
-                    gates[gate].set()
+                    if gate in gates:
+                        gates[gate].set()
                     mail_logger.log('Authorized: %(name)s'  % person, 'with %(name)s' % token, 'at', gate)
                     
         except (IdentificationFail, AuthorizationFail), e:
