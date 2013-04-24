@@ -21,6 +21,14 @@ class ListenerMainGate (object):
     port_params = { 'device':'/dev/ttyAMA0', 'baudrate':9600, }
 
 
+@listeners.append
+class ListenerSipMainGate (object):
+    
+    listener_name = 'sip_call'
+    listener_params = { 'domain': '***domain***', 'username': '***user***', 'passwd': '' }
+    
+    gate_name = 'main_gate'
+
 
 #@listeners.append
 class ListenerBackDoor (object):
