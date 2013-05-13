@@ -13,6 +13,7 @@ import re
 
 
 
+
 @ListenerFactory.register
 class SipListener (AbstractListener, pj.AccountCallback, pj.CallCallback):
     '''
@@ -29,6 +30,7 @@ class SipListener (AbstractListener, pj.AccountCallback, pj.CallCallback):
         username = None,
         passwd = None,
         loglevel = 0,
+        time_out = 7,
     )
     
     URI2ID_PATTERN = r'<sip:(.*)@.*>'
@@ -87,19 +89,37 @@ class SipListener (AbstractListener, pj.AccountCallback, pj.CallCallback):
         Keyword arguments:
         call    -- the new incoming call
         """
-        if self.call:
-            call.answer(486, "Busy")
+        if call == self.call:
             return
         
+        ci = call.info()
+        self.logger.log('sip: incoming call from %s to %s' % (ci.remote_uri, ci.uri))
+
+        if self.call:
+            call.answer(486, 'Busy')
+            return
+        
+        if self.caller(ci.remote_uri) == 'anonymous':
+            call.answer(433)
+            return
+
         self._set_call(call)
         
         self.passcode = [ ]
 
-        ci = self.call.info()
-        self.logger.log('sip: incoming call from %s to %s' % (ci.remote_uri, ci.uri))
-
         self.call.set_callback(self)
         self.call.answer(200) # connect
+        
+        
+    def on_time_out(self):
+        print 'Time out for call', self.call
+        
+        if self.call is not None:
+            self.lib.thread_register('TimeOut')
+            
+            self.call.hangup()
+            self.time_out = None
+            self.logger.log('sip: call time out for %s' % self.caller(self.call.info().remote_uri))
 
         
     def on_state(self):
@@ -108,12 +128,20 @@ class SipListener (AbstractListener, pj.AccountCallback, pj.CallCallback):
         print "(" + self.call.info().last_reason + ")"
         
         ci = self.call.info()
+        
+        if ci.state == pj.CallState.CONFIRMED:
+            self.time_out = threading.Timer(self.params.time_out, self.on_time_out)
+            self.time_out.start()
+        
         if ci.state == pj.CallState.DISCONNECTED:
             msg = '-'.join((self.caller(ci.remote_uri), self.caller(ci.uri), ''.join(self.passcode)))
         
             self.msgq.put(msg)
             self._set_call(None)
 
+            if self.time_out is not None:
+                self.time_out.cancel()
+                    
 
     def log_cb(self, level, msg, _len):
         self.logger.log(msg)
