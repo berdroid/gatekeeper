@@ -103,12 +103,15 @@ class SyslogMailLogger (SyslogLogger):
         msg['From'] = self.sender
         msg['To'] = self.recvr
         
-        smtp = smtplib.SMTP(self.mail_server)
-        smtp.set_debuglevel(self.smtp_debug)
-        if self.username:
-            smtp.login(self.username, self.password)
-        smtp.sendmail(self.sender, [self.recvr], msg.as_string())
-        smtp.quit()
+        try:
+            smtp = smtplib.SMTP(self.mail_server)
+            smtp.set_debuglevel(self.smtp_debug)
+            if self.username:
+                smtp.login(self.username, self.password)
+            smtp.sendmail(self.sender, [self.recvr], msg.as_string())
+            smtp.quit()
+        except Exception, e:
+            super(SyslogMailLogger, self).write_log(ts, 'MailLog failed with %s' % e)
         
         
     def write_log(self, ts, msg):
