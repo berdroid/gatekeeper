@@ -133,10 +133,11 @@ class SipListener (AbstractListener, pj.AccountCallback, pj.CallCallback):
             self.time_out = threading.Timer(self.params.time_out, self.on_time_out)
             self.time_out.start()
         
-        if ci.state == pj.CallState.DISCONNECTED:
-            msg = '-'.join((self.caller(ci.remote_uri), self.caller(ci.uri), ''.join(self.passcode)))
-        
-            self.msgq.put(msg)
+        if ci.state == pj.CallState.DISCONNECTED: 
+            if ci.last_code == 200:
+                msg = '-'.join((self.caller(ci.remote_uri), self.caller(ci.uri), ''.join(self.passcode)))
+                self.msgq.put(msg)
+            
             self._set_call(None)
 
             if self.time_out is not None:
