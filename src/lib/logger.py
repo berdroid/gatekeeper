@@ -9,6 +9,8 @@ import StringIO
 import syslog
 import smtplib
 import email.mime.text
+import multiprocessing
+
 
 
 class Logger (object):
@@ -114,8 +116,10 @@ class SyslogMailLogger (SyslogLogger):
         
         if self.mail_server is not None:
             try:
-                self.mail_log(ts, msg)
-                super(SyslogMailLogger, self).write_log(ts, 'MailLog succeded')
+                mp = multiprocessing.Process(target=self.mail_log, name='SyslogMailLogger', kwargs={'ts':ts, 'log_msg':msg})
+                mp.start()
+                
+                super(SyslogMailLogger, self).write_log(ts, 'MailLog succeeded')
             except Exception, e:
                 super(SyslogMailLogger, self).write_log(ts, 'MailLog failed with %s' % e)
                 
@@ -130,7 +134,8 @@ if __name__ == '__main__':
     
     sm = SyslogMailLogger()
     sm.open_maillog('smtp.web.de', port=465, username='***', password='***')
+    print '1', datetime.datetime.now().isoformat()
     sm.log('Test from stargate')
+    print '2', datetime.datetime.now().isoformat()
     
 
-        
