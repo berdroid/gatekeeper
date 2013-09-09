@@ -44,14 +44,25 @@ class AbstractAuthorization (object):
     def check(self, token_key, gate, event_ts):
         token, person = self.identify(token_key)
         result = self.authorize(token, person, gate, event_ts)
-        return result, token, person
+        meta = self.metadata(token, person)
+        return result, token, person, meta
     
     
     def identify(self, token_key):
         raise NotImplementedError()
     
     
-    def authorize(self, identity, gate, event_ts):
+    def authorize(self, token, person, gate, event_ts):
         raise NotImplementedError()
+    
+    
+    def metadata(self, token, person):
+        meta = DictObj(maillog=True)
+        
+        meta.update(person)
+        meta.update(token)
+    
+        return meta
+    
     
     

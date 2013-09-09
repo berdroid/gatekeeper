@@ -56,11 +56,13 @@ if __name__ == '__main__':
             gate, token_key = q.get(timeout=5)
         
             if token_key is not None:
-                authorized, token, person = auth.check(token_key, gate, datetime.datetime.now())
+                authorized, token, person, meta = auth.check(token_key, gate, datetime.datetime.now())
                 if authorized:
+                    do_mail = meta.maillog
+
                     if gate in gates:
                         gates[gate].set()
-                    mail_logger.log('Authorized: %(name)s'  % person, 'with %(name)s' % token, 'at', gate)
+                    mail_logger.log('Authorized: %(name)s'  % person, 'with %(name)s' % token, 'at', gate, do_maillog=do_mail)
                     
         except (IdentificationFail, AuthorizationFail), e:
             mail_logger.log(e.__class__.__name__, str(e))
