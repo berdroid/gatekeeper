@@ -19,17 +19,17 @@ class Logger (object):
         self.out = logfile
     
     
-    def log(self, *args):
+    def log(self, *args, **kwargs):
         ts = datetime.datetime.now().isoformat()
         msg = self.msg(args)
-        self.write_log(ts, msg)
+        self.write_log(ts, msg, **kwargs)
         
         
     def msg(self, args):
         return ' '.join(args) + '\n'
     
     
-    def write_log(self, ts, msg):
+    def write_log(self, ts, msg, **kwargs):
         self.out.write(ts + ': ' + msg)
         
         
@@ -66,11 +66,12 @@ class SyslogLogger (Logger):
         self.do_syslog = True
         
         
-    def write_log(self, ts, msg):
+    def write_log(self, ts, msg, do_syslog=True, **kwargs):
         if self.out is not None:
-            super(SyslogLogger, self).write_log(ts, msg)
-            
-        syslog.syslog(msg)
+            super(SyslogLogger, self).write_log(ts, msg, **kwargs)
+          
+        if do_syslog:
+            syslog.syslog(msg)
 
 
     def close(self):
@@ -114,17 +115,17 @@ class SyslogMailLogger (SyslogLogger):
             super(SyslogMailLogger, self).write_log(ts, 'MailLog failed with %s' % e)
         
         
-    def write_log(self, ts, msg):
-        super(SyslogMailLogger, self).write_log(ts, msg)
+    def write_log(self, ts, msg, do_maillog=True, **kwargs):
+        super(SyslogMailLogger, self).write_log(ts, msg, **kwargs)
         
-        if self.mail_server is not None:
+        if do_maillog and self.mail_server is not None:
             try:
                 mp = multiprocessing.Process(target=self.mail_log, name='SyslogMailLogger', kwargs={'ts':ts, 'log_msg':msg})
                 mp.start()
                 
-                super(SyslogMailLogger, self).write_log(ts, 'MailLog succeeded')
+                super(SyslogMailLogger, self).write_log(ts, 'MailLog succeeded', **kwargs)
             except Exception, e:
-                super(SyslogMailLogger, self).write_log(ts, 'MailLog failed with %s' % e)
+                super(SyslogMailLogger, self).write_log(ts, 'MailLog failed with %s' % e, **kwargs)
                 
             
     def close(self):
