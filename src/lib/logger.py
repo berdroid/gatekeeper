@@ -87,9 +87,10 @@ class SyslogMailLogger (SyslogLogger):
         self.mail_server = None
         
         
-    def open_maillog(self, host, port=0, username=None, password=None, body='', sender='bernhard.bender@web.de', recvr='ber.droid@googlemail.com', smtp_debug=False):
+    def open_maillog(self, host, port=0, username=None, password=None, body='', sender='bernhard.bender@web.de', recvr='ber.droid@googlemail.com', smtp_debug=False, starttls=False):
         self.mail_server = host
         self.port = port
+        self.starttls = starttls
         self.username = username
         self.password = password
         self.body = body
@@ -105,8 +106,14 @@ class SyslogMailLogger (SyslogLogger):
         msg['To'] = self.recvr
         
         try:
-            smtp = smtplib.SMTP(self.mail_server)
+            smtp = smtplib.SMTP(host=self.mail_server, port=self.port)
             smtp.set_debuglevel(self.smtp_debug)
+            
+            if self.starttls:
+                smtp.ehlo()
+                smtp.starttls()
+                smtp.ehlo()
+
             if self.username:
                 smtp.login(self.username, self.password)
             smtp.sendmail(self.sender, [self.recvr], msg.as_string())
@@ -137,7 +144,7 @@ class SyslogMailLogger (SyslogLogger):
 if __name__ == '__main__':
     
     sm = SyslogMailLogger()
-    sm.open_maillog('smtp.web.de', port=465, username='***', password='***')
+    sm.open_maillog('smtp.web.de', port=587, starttls=True, username='***', password='***')
     print '1', datetime.datetime.now().isoformat()
     sm.log('Test from stargate')
     print '2', datetime.datetime.now().isoformat()
