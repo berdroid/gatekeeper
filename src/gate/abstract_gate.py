@@ -20,6 +20,7 @@ class AbstractGate (multiprocessing.Process):
     DEFAULTS = DictObj(
         hold_time = 1,
         block_time = 10,
+        verbose_logging = False,
     )
 
 
@@ -76,21 +77,23 @@ class AbstractGate (multiprocessing.Process):
 
 
     def unlock(self):
-        self.log.log('Gate %(name)s on %(gate)s: unlocking' % 
-            { 'name':self.name, 'gate':self.gate_name, }
-        )
+        if self.params.verbose_logging:
+            self.log.log('Gate %(name)s on %(gate)s: unlocking' % 
+                { 'name':self.name, 'gate':self.gate_name, }
+            )
 
 
     def lock(self):
-        self.log.log('Gate %(name)s on %(gate)s: locking' % 
-            { 'name':self.name, 'gate':self.gate_name, }
-        )
+        if self.params.verbose_logging:
+            self.log.log('Gate %(name)s on %(gate)s: locking' % 
+                { 'name':self.name, 'gate':self.gate_name, }
+            )
         
         
     def on_shutdown(self):
         self.lock()
         self.close()
-        self.log.log('Gate %(name)s on %(gate)s: dhut down' % 
+        self.log.log('Gate %(name)s on %(gate)s: shut down' % 
             { 'name':self.name, 'gate':self.gate_name, }
         )
 
