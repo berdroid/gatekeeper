@@ -10,6 +10,7 @@ import syslog
 import smtplib
 import email.mime.text
 import multiprocessing
+import subprocess
 
 
 
@@ -30,7 +31,8 @@ class Logger (object):
     
     
     def write_log(self, ts, msg, **kwargs):
-        self.out.write(ts + ': ' + msg)
+        if self.out is not None:
+            self.out.write(ts + ': ' + msg)
         
         
     def close(self):
@@ -67,8 +69,7 @@ class SyslogLogger (Logger):
         
         
     def write_log(self, ts, msg, do_syslog=True, **kwargs):
-        if self.out is not None:
-            super(SyslogLogger, self).write_log(ts, msg, **kwargs)
+        super(SyslogLogger, self).write_log(ts, msg, **kwargs)
           
         if do_syslog:
             syslog.syslog(msg)
@@ -139,14 +140,56 @@ class SyslogMailLogger (SyslogLogger):
         super(SyslogMailLogger).close()
         self.mail_server = None
         
+
+class ProcessLogger (SyslogLogger):
+    
+    def __init__(self, logfile=None):
+        super(ProcessLogger, self).__init__(logfile)
+        
+        self.script = None
+        
+        
+    def open_processlog(self, script):
+        self.script = script
+        
+        
+    def process_log(self, ts, name, gate):
+        cmdline = ' '.join((self.script, name, gate))
+        rt = subprocess.call(cmdline, shell=True)
+        
+        if rt:
+            super(ProcessLogger, self).write_log(ts, 'Calling %s returned: %d' % (self.script, rt))
+            
+        
+    def write_log(self, ts, msg, person, gate, **kwargs):        
+        if self.script is not None:
+            try:
+                mp = multiprocessing.Process(target=self.process_log, name='ProcessLogger', kwargs={'ts':ts, 'name':person['name'], 'gate':gate})
+                mp.start()
+                
+                super(ProcessLogger, self).write_log(ts, 'ProcessLog succeeded: %s' % self.script, **kwargs)
+            except Exception, e:
+                super(ProcessLogger, self).write_log(ts, 'ProcessLog failed with %s' % e, **kwargs)
+                
+            
+    def close(self):
+        super(ProcessLogger).close()
+
         
         
 if __name__ == '__main__':
     
-    sm = SyslogMailLogger()
-    sm.open_maillog('smtp.web.de', port=587, starttls=True, username='***', password='***')
-    print '1', datetime.datetime.now().isoformat()
-    sm.log('Test from stargate')
-    print '2', datetime.datetime.now().isoformat()
+#     sm = SyslogMailLogger()
+#     sm.open_maillog('smtp.web.de', port=587, starttls=True, username='***', password='***')
+#     print '1', datetime.datetime.now().isoformat()
+#     sm.log('Test from stargate')
+#     print '2', datetime.datetime.now().isoformat()
+    import config
     
+    pl = ProcessLogger()
+    pl.open_processlog(**config.Logging.process_params)
+    print '1', datetime.datetime.now().isoformat()
+    pl.log(person='nik', gate='stargate')
+    pl.log(person='ber', gate='main_gate')
+    print '2', datetime.datetime.now().isoformat()
 

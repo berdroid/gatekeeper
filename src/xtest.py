@@ -26,6 +26,10 @@ if __name__ == '__main__':
     mail_logger = logger.SyslogMailLogger()
     mail_logger.open_syslog(**config.Logging.syslog_params)
     mail_logger.open_maillog(**config.Logging.mail_params)
+    
+    process_logger = logger.ProcessLogger()
+    process_logger.open_syslog(**config.Logging.syslog_params)
+    process_logger.open_processlog(**config.Logging.process_params)
 
 #     l = logger.Logger()
 #     mail_logger = l
@@ -62,7 +66,9 @@ if __name__ == '__main__':
 
                     if gate in gates:
                         gates[gate].set()
+                        
                     mail_logger.log('Authorized: %(name)s'  % person, 'with %(name)s' % token, 'at', gate, do_maillog=do_mail)
+                    process_logger.log('Authorized: %(name)s'  % person, 'with %(name)s' % token, 'at', gate, person=person, gate=gate)
                     
         except (IdentificationFail, AuthorizationFail), e:
             mail_logger.log(e.__class__.__name__, str(e))

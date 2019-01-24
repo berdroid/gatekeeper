@@ -54,6 +54,7 @@ class Logging (object):
     
     mail_params = { 'host':'***domain***', 'port':465, 'username':'***user***', 'password':'' }
     syslog_params = { 'ident':'gatekeeper' }
+    process_params = { 'script': './handle_gate.sh' }
 
 
 
@@ -63,5 +64,4 @@ class GateMainGate (object):
     gate_type = 'pulse'
     gate_name = 'main_gate'
     gate_params = { 'hold_time': 5, 'gpio': 'gpio2', 'active_low': True, 'pulse': 0.01 }
-
 
