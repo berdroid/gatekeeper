@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stargate/stargate/udp.dart';
 
 void main() => runApp(MyApp());
 
@@ -46,7 +47,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  final StarGateUDP starGate;
+
+  _MyHomePageState() : starGate = StarGateUDP('front');
+
   void _incrementCounter() {
+    starGate.openGate(_counter);
+
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
