@@ -14,6 +14,10 @@ class StarGateUDP {
 
   void openGate(int idx) async {
     var sender = await UDP.bind(Endpoint.any());
-    sender.send('open stargate: $idx\n'.codeUnits, Endpoint.unicast(InternetAddress('192.168.1.30'), port: Port(4242)));
+    List<InternetAddress> address = await InternetAddress.lookup('melber.ddnss.eu');
+    Endpoint endpoint = Endpoint.unicast(address[0], port: Port(4242));
+    String msg = 'open stargate: $idx\n';
+
+    sender.send(msg.codeUnits, endpoint);
   }
 }
