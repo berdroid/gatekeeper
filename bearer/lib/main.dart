@@ -52,10 +52,12 @@ class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState() : starGate = StarGateUDP('front',
     hostName: 'melber.ddnss.eu',
     port: 4242,
+    user: 'bernhard',
+    secret: 'J22U6B3WIWRRBTAV',
   );
 
   void _incrementCounter() {
-    starGate.openGate(_counter, onResult: (bool success) {
+    starGate.openGate(onResult: (bool success) {
       setState(() {
         if (success)
           _counter++;
