@@ -1,14 +1,11 @@
-
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:udp/udp.dart';
 
-
 class StarGateUDP {
-
-  StarGateUDP(this.gate,
-  {
+  StarGateUDP(
+    this.gate, {
     @required this.hostName,
     @required this.port,
   });
@@ -26,12 +23,10 @@ class StarGateUDP {
 
       sender.send(msg.codeUnits, endpoint);
       print('sending $idx => $address done.');
-      if (onResult != null)
-        onResult(true);
+      if (onResult != null) onResult(true);
     } catch (e) {
       print(e);
-      if (onResult != null)
-        onResult(false);
-    } finally {}
+      if (onResult != null) onResult(false);
+    }
   }
 }
