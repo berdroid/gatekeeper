@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:stargate/add_gate.dart';
+import 'package:stargate/bloc/bloc_provider.dart';
+import 'package:stargate/bloc/config_bloc.dart';
 import 'package:stargate/gate.dart';
 
 void main() => runApp(MyApp());
@@ -10,62 +12,58 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: title,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return BlocProvider(
+      bloc: ConfigBLoC(),
+      child: MaterialApp(
+        title: title,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: GatesPage(),
       ),
-      home: MyHomePage(title: title),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class GatesPage extends StatelessWidget {
 
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  var gates = <String>[];
-
-  String username = 'bernhard';
-
-  _MyHomePageState();
-
-  Widget gateCard(String config) {
+  Widget gateCard(BuildContext context, GateConfig gate) {
     return Gate(
-      user: username,
-      config: config,
+      user: BlocProvider.of<ConfigBLoC>(context).username,
+      config: gate.config,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: gates.map((f) => gateCard(f)).toList(),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () async {
-          String config = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddGate())
-          );
-          setState(() => gates.add(config));
-        },
-      ),
+    final configProvider = BlocProvider.of<ConfigBLoC>(context);
+    return StreamBuilder<List<GateConfig>>(
+      stream: configProvider.configStream,
+      builder: (context, snapshot) {
+        final gates = snapshot.data ?? [];
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Stargate'),
+          ),
+          body: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: gates.map((e) => gateCard(context, e)).toList(),
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () async {
+              String config = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddGate())
+              );
+              configProvider.addConfig(config);            },
+          ),
+        );
+      },
     );
   }
 }
+
