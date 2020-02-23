@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:udp/udp.dart';
 import 'package:dotp/dotp.dart';
 
+typedef GateCallback = void Function(bool);
+
 class StarGateUDP {
   StarGateUDP(
     this.gate, {
@@ -19,7 +21,7 @@ class StarGateUDP {
   final String user;
   final TOTP _totp;
 
-  void openGate({onResult: Function}) async {
+  void openGate({GateCallback onResult}) async {
     try {
       final code = _totp.now();
       var sender = await UDP.bind(Endpoint.any());
