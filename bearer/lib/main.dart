@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stargate/gate.dart';
@@ -29,7 +31,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var gates = <Future>[
+  var gates = <FutureOr<String>>[
     rootBundle.loadString('res/front.json'),
     rootBundle.loadString('res/back.json'),
   ];
@@ -38,24 +40,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _MyHomePageState();
 
-  Widget gateCard(Future future) {
-    return FutureBuilder<String>(
-      future: future,
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        if (snapshot.hasData) {
-          return Gate(
-            user: username,
-            config: snapshot.data,
+  Widget gateCard(FutureOr<String> future) {
+    if (future is Future<String>) {
+      return FutureBuilder<String>(
+            future: future,
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.hasData) {
+                return Gate(
+                  user: username,
+                  config: snapshot.data,
+                );
+              } else {
+                return SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 60,
+                  height: 60,
+                );
+              }
+            },
           );
-        } else {
-          return SizedBox(
-            child: CircularProgressIndicator(),
-            width: 60,
-            height: 60,
-          );
-        }
-      },
-    );
+    } else {
+      return Gate(
+        user: username,
+        config: future,
+      );
+    }
   }
 
   @override
