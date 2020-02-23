@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:stargate/add_gate.dart';
 import 'package:stargate/gate.dart';
 
 void main() => runApp(MyApp());
@@ -33,7 +34,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var gates = <FutureOr<String>>[
     rootBundle.loadString('res/front.json'),
-    rootBundle.loadString('res/back.json'),
   ];
 
   String username = 'bernhard';
@@ -82,6 +82,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddGate())
+          );
+        },
       ),
     );
   }
