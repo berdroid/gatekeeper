@@ -13,26 +13,32 @@ class AddGate extends StatefulWidget {
 
 class _AddGateState extends State<AddGate> {
 
-  String _code;
+  final _code = TextEditingController();
+
   bool _started;
 
   @override
   void initState() {
     super.initState();
-    _code = '';
+    _code.clear();
     _started = false;
   }
 
+  @override
+  void dispose() {
+    _code.dispose();
+  }
+
   void downloadConfig(context) async {
-    final url = 'http://file.io/$_code';
+    final url = 'http://file.io/${_code.text}';
     print('starting with $url');
     final http.Response r = await http.get(url);
     print('${r.statusCode}');
     if (r.statusCode == HttpStatus.ok) {
       Navigator.pop(context, r.body);
-    } else {
     }
     setState(() {
+      _code.clear();
       _started = false;
     });
   }
@@ -52,20 +58,18 @@ class _AddGateState extends State<AddGate> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             TextField(
+              controller: _code,
               enabled: !_started,
-              onChanged: (value) {
-                setState(() => _code = value);
-              },
+              autofocus: true,
+              onChanged: (_) => setState(() {}),
             ),
             RaisedButton(
               child: Text('Next'),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
               color: Colors.green,
-              onPressed: _started || _code.length < 5 ? null : () async {
+              onPressed: _started || _code.text.length < 5 ? null : () async {
                 setState(() => _started = true);
                 downloadConfig(context);
-//                await Future.delayed(Duration(seconds: 5));
-//                Navigator.pop(context);
               },
             ),
             SizedBox(height: 40),
