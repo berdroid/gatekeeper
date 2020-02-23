@@ -1,5 +1,9 @@
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+
+import 'package:http/http.dart' as http;
 
 
 class AddGate extends StatefulWidget {
@@ -17,6 +21,21 @@ class _AddGateState extends State<AddGate> {
     super.initState();
     _code = '';
     _started = false;
+  }
+
+  void downloadConfig(context) async {
+    final url = 'http://file.io/$_code';
+    print('starting with $url');
+    final http.Response r = await http.get(url);
+    if (r.statusCode == HttpStatus.ok) {
+      print(r.body);
+      Navigator.pop(context);
+    } else {
+      print('${r.statusCode}');
+    }
+    setState(() {
+      _started = false;
+    });
   }
 
   @override
@@ -45,8 +64,9 @@ class _AddGateState extends State<AddGate> {
               color: Colors.green,
               onPressed: _started || _code.length < 5 ? null : () async {
                 setState(() => _started = true);
-                await Future.delayed(Duration(seconds: 5));
-                Navigator.pop(context);
+                downloadConfig(context);
+//                await Future.delayed(Duration(seconds: 5));
+//                Navigator.pop(context);
               },
             ),
             SizedBox(height: 40),
