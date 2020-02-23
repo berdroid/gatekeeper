@@ -1,16 +1,16 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:stargate/bloc/config_bloc.dart';
 
 import 'stargate/udp.dart';
 import 'package:flutter/material.dart';
 
 class Gate extends StatefulWidget {
-  Gate({Key key, this.user, this.config}) : super(key: key);
+  Gate({Key key, this.user, this.gateConfig}) : super(key: key);
 
   final String user;
-  final String config;
+  final GateConfig gateConfig;
 
   @override
   _GateState createState() => _GateState();
@@ -25,27 +25,17 @@ enum GateState {
 }
 
 class _GateState extends State<Gate> {
-  StarGateUDP gate;
-  String name;
-  String description;
+  StarGateUDP get gate => widget.gateConfig.gate;
+  Map<String, dynamic> get config => widget.gateConfig.config;
+  String get name => widget.gateConfig.name;
+  String get description => widget.gateConfig.description;
   GateState state = GateState.accessible;
   StreamSubscription wlan;
 
   @override
   void initState() {
     super.initState();
-    print(widget.config);
-
-    final Map<String, dynamic> config = json.decode(widget.config);
-    name = config['name'];
-    description = config['desc'];
-    gate = StarGateUDP(
-      config['gate'],
-      user: widget.user,
-      secret: config['TOTP']['secret'],
-      hostName: config['UDP']['host'],
-      port: config['UDP']['port'],
-    );
+    print('${widget.user}@${widget.gateConfig.name}');
 
     if (config['UDP'].keys.contains('wlan')) {
       wlan = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) async {

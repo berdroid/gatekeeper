@@ -1,20 +1,36 @@
-
-
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:stargate/bloc/bloc.dart';
+import 'package:stargate/stargate/udp.dart';
 
 class GateConfig {
-  final String config;
+  final String configJSON;
+  final String username;
+  final Map<String, dynamic> config;
+
+  StarGateUDP gate;
+
+  String get name => config['name'];
+  String get description => config['desc'];
+  bool accessible;
 
   GateConfig({
-    @required this.config,
-});
+    @required this.configJSON,
+    @required this.username,
+  }) : config = json.decode(configJSON) {
+    gate = StarGateUDP(
+      config['gate'],
+      user: username,
+      secret: config['TOTP']['secret'],
+      hostName: config['UDP']['host'],
+      port: config['UDP']['port'],
+    );
+  }
 }
 
 class ConfigBLoC implements Bloc {
-
   final _configs = <String>[];
 
   String _username = 'bernhard';
@@ -27,9 +43,9 @@ class ConfigBLoC implements Bloc {
 
   void addConfig(String config) {
     _configs.add(config);
-    _configController.add(
-        _configs.map((e) => GateConfig(config: e)).toList()
-    );
+    _configController.add(_configs
+        .map((e) => GateConfig(configJSON: e, username: username))
+        .toList());
   }
 
   @override

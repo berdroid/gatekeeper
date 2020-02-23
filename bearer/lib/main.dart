@@ -30,7 +30,7 @@ class GatesPage extends StatelessWidget {
   Widget gateCard(BuildContext context, GateConfig gate) {
     return Gate(
       user: BlocProvider.of<ConfigBLoC>(context).username,
-      config: gate.config,
+      gateConfig: gate,
     );
   }
 
