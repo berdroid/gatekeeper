@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+
+import 'package:connectivity/connectivity.dart';
 
 import 'stargate/udp.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +29,7 @@ class _GateState extends State<Gate> {
   String name;
   String description;
   GateState state = GateState.accessible;
+  StreamSubscription wlan;
 
   @override
   void initState() {
@@ -42,6 +46,29 @@ class _GateState extends State<Gate> {
       hostName: config['UDP']['host'],
       port: config['UDP']['port'],
     );
+
+    if (config['UDP'].keys.contains('wlan')) {
+      wlan = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) async {
+        var newState = GateState.blocked;
+        print(result);
+        if (result == ConnectivityResult.wifi) {
+          var wifiName = await (Connectivity().getWifiName());
+          print(wifiName);
+          if (wifiName == config['UDP']['wlan']) {
+            newState = GateState.accessible;
+          }
+        }
+        setState(() {
+          state = newState;
+        });
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    wlan?.cancel();
+    super.dispose();
   }
 
   @override
