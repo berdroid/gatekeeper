@@ -1,7 +1,5 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:stargate/add_gate.dart';
 import 'package:stargate/gate.dart';
 
@@ -32,39 +30,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var gates = <FutureOr<String>>[
-    rootBundle.loadString('res/front.json'),
-  ];
+  var gates = <String>[];
 
   String username = 'bernhard';
 
   _MyHomePageState();
 
-  Widget gateCard(FutureOr<String> future) {
-    if (future is Future<String>) {
-      return FutureBuilder<String>(
-            future: future,
-            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-              if (snapshot.hasData) {
-                return Gate(
-                  user: username,
-                  config: snapshot.data,
-                );
-              } else {
-                return SizedBox(
-                  child: CircularProgressIndicator(),
-                  width: 60,
-                  height: 60,
-                );
-              }
-            },
-          );
-    } else {
-      return Gate(
-        user: username,
-        config: future,
-      );
-    }
+  Widget gateCard(String config) {
+    return Gate(
+      user: username,
+      config: config,
+    );
   }
 
   @override
@@ -82,11 +58,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          String config = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => AddGate())
           );
+          setState(() => gates.add(config));
         },
       ),
     );

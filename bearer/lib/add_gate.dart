@@ -27,11 +27,10 @@ class _AddGateState extends State<AddGate> {
     final url = 'http://file.io/$_code';
     print('starting with $url');
     final http.Response r = await http.get(url);
+    print('${r.statusCode}');
     if (r.statusCode == HttpStatus.ok) {
-      print(r.body);
-      Navigator.pop(context);
+      Navigator.pop(context, r.body);
     } else {
-      print('${r.statusCode}');
     }
     setState(() {
       _started = false;
