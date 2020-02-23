@@ -29,8 +29,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future frontGate = rootBundle.loadString('res/front.json');
-  Future backDoor = rootBundle.loadString('res/back.json');
+  var gates = <Future>[
+    rootBundle.loadString('res/front.json'),
+    rootBundle.loadString('res/back.json'),
+  ];
 
   String username = 'bernhard';
 
@@ -66,10 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            gateCard(frontGate),
-            gateCard(backDoor),
-          ],
+          children: gates.map((f) => gateCard(f)).toList(),
         ),
       ),
       floatingActionButton: FloatingActionButton(
