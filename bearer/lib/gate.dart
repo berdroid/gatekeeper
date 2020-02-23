@@ -91,6 +91,7 @@ class _GateState extends State<Gate> {
                   });
                 });
               },
+              onLongPress: () {},
             )
           ],
         ),

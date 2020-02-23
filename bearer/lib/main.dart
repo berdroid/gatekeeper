@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stargate/gate.dart';
-import 'package:stargate/stargate/udp.dart';
 
 void main() => runApp(MyApp());
 
@@ -64,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 25),
+        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
