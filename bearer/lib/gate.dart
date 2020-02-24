@@ -38,7 +38,6 @@ class _GateState extends State<Gate> {
         if (accessible) _state = s;
       });
     }
-    ;
   }
 
   @override

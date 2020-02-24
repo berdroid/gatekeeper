@@ -51,6 +51,12 @@ class GatesPage extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: Text('Stargate'),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => configProvider.clearConfigs(),
+              )
+            ],
           ),
           body: Padding(
             padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),

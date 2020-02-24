@@ -85,6 +85,14 @@ class ConfigBLoC implements Bloc {
     _update();
   }
 
+  void clearConfigs() {
+    _storage.deleteAll().then((value) {
+      _storageValues?.clear();
+      _configs.clear();
+      _update();
+    });
+  }
+
   ConfigBLoC() {
     _wlanStatus = Connectivity()
         .onConnectivityChanged
