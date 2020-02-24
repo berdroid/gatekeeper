@@ -67,14 +67,16 @@ class GatesPage extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (context) => SetUser())
                 );
-                configProvider.username = username;
+                if (username != null)
+                  configProvider.username = username;
               }
               if (configProvider.username != null) {
                 String config = await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddGate())
                 );
-                configProvider.addConfig(config);
+                if (config != null)
+                  configProvider.addConfig(config);
               }
             },
           ),
