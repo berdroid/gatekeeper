@@ -4,6 +4,7 @@ import 'package:stargate/add_gate.dart';
 import 'package:stargate/bloc/bloc_provider.dart';
 import 'package:stargate/bloc/config_bloc.dart';
 import 'package:stargate/gate.dart';
+import 'package:stargate/set_user.dart';
 
 void main() => runApp(MyApp());
 
@@ -22,6 +23,12 @@ class MyApp extends StatelessWidget {
         home: GatesPage(),
       ),
     );
+  }
+
+  checkUsername(BuildContext context) {
+    if (BlocProvider.of<ConfigBLoC>(context).username == null) {
+
+    }
   }
 }
 
@@ -55,11 +62,21 @@ class GatesPage extends StatelessWidget {
           floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () async {
-              String config = await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AddGate())
-              );
-              configProvider.addConfig(config);            },
+              if (configProvider.username == null) {
+                String username = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SetUser())
+                );
+                configProvider.username = username;
+              }
+              if (configProvider.username != null) {
+                String config = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddGate())
+                );
+                configProvider.addConfig(config);
+              }
+            },
           ),
         );
       },

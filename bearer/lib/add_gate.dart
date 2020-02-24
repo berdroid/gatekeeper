@@ -26,6 +26,7 @@ class _AddGateState extends State<AddGate> {
 
   @override
   void dispose() {
+    super.dispose();
     _code.dispose();
   }
 

@@ -42,7 +42,7 @@ class GateConfig {
 class ConfigBLoC implements Bloc {
   final _configs = <String>[];
 
-  String _username = 'bernhard';
+  String _username;
 
   final _configController = StreamController<List<GateConfig>>();
 
@@ -53,6 +53,11 @@ class ConfigBLoC implements Bloc {
   Stream<List<GateConfig>> get configStream => _configController.stream;
 
   String get username => _username;
+
+  set username(String text) {
+    _username = text;
+    _update();
+  }
 
   void _update() => _configController.add(_configs
       .map((e) => GateConfig(
