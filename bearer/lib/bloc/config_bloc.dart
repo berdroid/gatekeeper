@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:stargate/bloc/bloc.dart';
 import 'package:stargate/stargate/udp.dart';
 
@@ -42,9 +44,10 @@ class GateConfig {
 class ConfigBLoC implements Bloc {
   final _configs = <String>[];
 
-  String _username;
-
   final _configController = StreamController<List<GateConfig>>();
+
+  final _storage = FlutterSecureStorage();
+  Map<String, String> _storageValues;
 
   String _wifiName;
 
@@ -52,20 +55,30 @@ class ConfigBLoC implements Bloc {
 
   Stream<List<GateConfig>> get configStream => _configController.stream;
 
-  String get username => _username;
-
-  set username(String text) {
-    _username = text;
-    _update();
+  String get username {
+    if (_storageValues != null)
+      return _storageValues['username'];
+    else
+      return null;
   }
 
-  void _update() => _configController.add(_configs
-      .map((e) => GateConfig(
-            configJSON: e,
-            username: username,
-            wifiName: _wifiName,
-          ))
-      .toList());
+  set username(String text) {
+    if (_storageValues != null) {
+      _storageValues['username'] = text;
+      _storage.write(key: 'username', value: text);
+      _update();
+    }
+  }
+
+  void _update() {
+    _configController.add(_configs
+        .map((e) => GateConfig(
+              configJSON: e,
+              username: username,
+              wifiName: _wifiName,
+            ))
+        .toList());
+  }
 
   void addConfig(String config) {
     _configs.add(config);
@@ -83,7 +96,15 @@ class ConfigBLoC implements Bloc {
         _wifiName = null;
         print('WiFi: none');
       }
-      _update();
+
+      try {
+        _storage.readAll().then((value) {
+          _storageValues = Map.from(value);
+          _update();
+        });
+      } on PlatformException catch (e) {
+        print(e);
+      }
     });
   }
 
