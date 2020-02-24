@@ -33,9 +33,12 @@ class _GateState extends State<Gate> {
   GateState _state = GateState.idle;
   GateState get state => accessible ? _state : GateState.blocked;
   set state(s) {
-    setState(() {
-      if (accessible) _state = s;
-    });
+    if (mounted) {
+      setState(() {
+        if (accessible) _state = s;
+      });
+    }
+    ;
   }
 
   @override
