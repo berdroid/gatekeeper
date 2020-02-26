@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:stargate/add_gate.dart';
 import 'package:stargate/bloc/bloc_provider.dart';
@@ -14,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      bloc: ConfigBLoC(),
+      bloc: ConfigBLoC.instance(),
       child: MaterialApp(
         title: title,
         theme: ThemeData(
@@ -24,15 +23,49 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-
-  checkUsername(BuildContext context) {
-    if (BlocProvider.of<ConfigBLoC>(context).username == null) {
-
-    }
-  }
 }
 
-class GatesPage extends StatelessWidget {
+class GatesPage extends StatefulWidget {
+  @override
+  _GatesPageState createState() => _GatesPageState();
+}
+
+class _GatesPageState extends State<GatesPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final configProvider = BlocProvider.of<ConfigBLoC>(context);
+      configProvider.load().then((value) async {
+        if (await _getUsernameIfNeeded(context, configProvider) ||
+            configProvider.numConfigs == 0)
+          _getGateConfigIfPossible(context, configProvider);
+      });
+    });
+  }
+
+  Future<bool> _getUsernameIfNeeded(BuildContext context, ConfigBLoC configProvider) async {
+    return Future<bool>(() async {
+      if (configProvider.username == null) {
+        String username = await Navigator.push(
+          context, MaterialPageRoute(builder: (context) => SetUser())
+        );
+        if (username != null) {
+          await configProvider.setUsername(username);
+          return true;
+        }
+      }
+      return false;
+    });
+  }
+
+  _getGateConfigIfPossible(BuildContext context, ConfigBLoC configProvider) async {
+    if (configProvider.username != null) {
+      String config = await Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AddGate()));
+      if (config != null) await configProvider.addConfig(config);
+    }
+  }
 
   Widget gateCard(BuildContext context, GateConfig gate) {
     return Gate(
@@ -68,22 +101,8 @@ class GatesPage extends StatelessWidget {
           floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () async {
-              if (configProvider.username == null) {
-                String username = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SetUser())
-                );
-                if (username != null)
-                  configProvider.username = username;
-              }
-              if (configProvider.username != null) {
-                String config = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AddGate())
-                );
-                if (config != null)
-                  configProvider.addConfig(config);
-              }
+              _getUsernameIfNeeded(context, configProvider);
+              _getGateConfigIfPossible(context, configProvider);
             },
           ),
         );
@@ -91,4 +110,3 @@ class GatesPage extends StatelessWidget {
     );
   }
 }
-

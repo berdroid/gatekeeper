@@ -55,20 +55,7 @@ class ConfigBLoC implements Bloc {
 
   Stream<List<GateConfig>> get configStream => _configController.stream;
 
-  String get username {
-    if (_storageValues != null)
-      return _storageValues['username'];
-    else
-      return null;
-  }
-
-  set username(String text) {
-    if (_storageValues != null) {
-      _storageValues['username'] = text;
-      _storage.write(key: 'username', value: text);
-      _update();
-    }
-  }
+  String _username;
 
   void _update() {
     _configController.add(_configs
@@ -80,20 +67,69 @@ class ConfigBLoC implements Bloc {
         .toList());
   }
 
-  void addConfig(String config) {
-    _configs.add(config);
-    _update();
+  Future<void> _load() {
+    return Future<void>(() async {
+      var data = await _storage.readAll();
+      _storageValues = Map.from(data);
+      _username = _storageValues['username'];
+
+      _configs.clear();
+      for (var i = 0; _storageValues.keys.contains('gate@$i'); i++) {
+        _configs.add(_storageValues['gate@$i']);
+      }
+    });
   }
 
-  void clearConfigs() {
-    _storage.deleteAll().then((value) {
+  Future<void> _save() {
+    return Future<void>(() async {
+      await _storage.deleteAll();
+      await _storage.write(key: 'username', value: _username);
+
+      for (var i = 0; i < _configs.length; i++) {
+        await _storage.write(key: 'gate@$i', value: _configs[i]);
+      }
+    });
+  }
+
+  String get username => _username;
+
+  int get numConfigs => _configs.length;
+
+  Future<void> setUsername(String name) {
+    return Future<void>(() async {
+      _username = name;
+      await _save();
+      _update();
+    });
+  }
+
+  Future<void> addConfig(String config) {
+    return Future<void>(() async {
+      _configs.add(config);
+      await _save();
+      _update();
+    });
+  }
+
+  Future<void> clearConfigs() {
+    return Future<void>(() async {
+      await _storage.deleteAll();
+      _username = null;
       _storageValues?.clear();
       _configs.clear();
       _update();
     });
   }
 
-  ConfigBLoC() {
+  ConfigBLoC._() {
+    try {
+      _load().then((_) {
+        _update();
+      });
+    } on PlatformException catch (e) {
+      print(e);
+    }
+
     _wlanStatus = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) async {
@@ -104,17 +140,19 @@ class ConfigBLoC implements Bloc {
         _wifiName = null;
         print('WiFi: none');
       }
-
-      try {
-        _storage.readAll().then((value) {
-          _storageValues = Map.from(value);
-          _update();
-        });
-      } on PlatformException catch (e) {
-        print(e);
-      }
-    });
+   });
   }
+
+  static ConfigBLoC _instance;
+
+  factory ConfigBLoC.instance() {
+    if (_instance == null) {
+      _instance = ConfigBLoC._();
+    }
+    return _instance;
+  }
+
+  Future<void> load() => _load();
 
   @override
   void dispose() {
