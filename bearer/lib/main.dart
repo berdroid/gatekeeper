@@ -78,9 +78,12 @@ class _GatesPageState extends State<GatesPage> {
   }
 
   Widget gateCard(BuildContext context, GateConfig gate) {
-    return Gate(
-      user: BlocProvider.of<ConfigBLoC>(context).username,
-      gateConfig: gate,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12.5),
+      child: Gate(
+        user: BlocProvider.of<ConfigBLoC>(context).username,
+        gateConfig: gate,
+      ),
     );
   }
 
@@ -97,9 +100,10 @@ class _GatesPageState extends State<GatesPage> {
             title: Text('Stargate'),
           ),
           body: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 37.5),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
+
               children: gates.map((e) => gateCard(context, e)).toList(),
             ),
           ),
