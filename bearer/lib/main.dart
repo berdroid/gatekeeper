@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:stargate/add_gate.dart';
 import 'package:stargate/bloc/bloc_provider.dart';
 import 'package:stargate/bloc/config_bloc.dart';
@@ -34,6 +35,7 @@ class _GatesPageState extends State<GatesPage> {
   @override
   void initState() {
     super.initState();
+    _getPermission();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final configProvider = BlocProvider.of<ConfigBLoC>(context);
       configProvider.load().then((value) async {
@@ -65,6 +67,14 @@ class _GatesPageState extends State<GatesPage> {
           context, MaterialPageRoute(builder: (context) => AddGate()));
       if (config != null) await configProvider.addConfig(config);
     }
+  }
+
+  _getPermission() async {
+    Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([
+      PermissionGroup.location,
+      PermissionGroup.locationAlways,
+    ]);
+    print(permissions);
   }
 
   Widget gateCard(BuildContext context, GateConfig gate) {
