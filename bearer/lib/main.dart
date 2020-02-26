@@ -93,13 +93,8 @@ class _GatesPageState extends State<GatesPage> {
         final gates = snapshot.data ?? [];
         return Scaffold(
           appBar: AppBar(
+            leading: Container(height: 1),
             title: Text('Stargate'),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () => configProvider.clearConfigs(),
-              )
-            ],
           ),
           body: Padding(
             padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
@@ -108,13 +103,33 @@ class _GatesPageState extends State<GatesPage> {
               children: gates.map((e) => gateCard(context, e)).toList(),
             ),
           ),
-          floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add),
-            onPressed: () async {
-              _getUsernameIfNeeded(context, configProvider);
-              _getGateConfigIfPossible(context, configProvider);
-            },
+          drawer: Drawer(
+            child: Column(
+              children: <Widget>[
+                DrawerHeader(child: Text('Actions')),
+                Spacer(flex: 25),
+                ListTile(
+                  leading: Icon(Icons.add_location),
+                  title: Text('Add Gate'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _getUsernameIfNeeded(context, configProvider);
+                    _getGateConfigIfPossible(context, configProvider);
+                  },
+                ),
+                Spacer(flex: 1),
+                ListTile(
+                  leading: Icon(Icons.delete),
+                  title: Text('Delete All'),
+                  onLongPress: () {
+                    Navigator.pop(context);
+                    configProvider.clearConfigs();
+                  },
+                ),
+              ],
+            ),
           ),
+
         );
       },
     );
