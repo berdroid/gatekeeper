@@ -121,6 +121,17 @@ class ConfigBLoC implements Bloc {
     });
   }
 
+  void _updateWiFi(ConnectivityResult result) async {
+    if (result == ConnectivityResult.wifi) {
+      _wifiName = await (Connectivity().getWifiName());
+      print('WiFi: $_wifiName');
+    } else {
+      _wifiName = null;
+      print('WiFi: none');
+    }
+    _update();
+  }
+
   ConfigBLoC._() {
     try {
       _load().then((_) {
@@ -130,17 +141,9 @@ class ConfigBLoC implements Bloc {
       print(e);
     }
 
-    _wlanStatus = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) async {
-      if (result == ConnectivityResult.wifi) {
-        _wifiName = await (Connectivity().getWifiName());
-        print('WiFi: $_wifiName');
-      } else {
-        _wifiName = null;
-        print('WiFi: none');
-      }
-   });
+    _wlanStatus = Connectivity().onConnectivityChanged.listen(_updateWiFi);
+
+    Connectivity().checkConnectivity().then(_updateWiFi);
   }
 
   static ConfigBLoC _instance;
