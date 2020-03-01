@@ -32,6 +32,7 @@ if __name__ == '__main__':
         
         if resp['success']:
             print('Download code: {key}'.format(**resp))
+            print('Token: {{ "name": "", "kind": "totp", "id": "{}", "blocked": false, "person_id": 0 }},'.format(secret))
             sys.exit(0)
             
     print(r.text)
