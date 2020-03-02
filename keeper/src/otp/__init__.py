@@ -37,7 +37,7 @@ class OTP (object):
         hasher = hmac.new(self.secret, self._bytes64(value), self.digest)
         hash = bytearray(hasher.digest())
         offset = hash[-1] & 0xf
-        code = struct.unpack('>L', hash[offset:offset+4])[0]
+        code = struct.unpack('>L', hash[offset:offset+4])[0] & 0x7fffffff
         str_code = str(code % 10 ** self.digits)
         
         return ('0'*self.digits + str_code)[-self.digits:]
