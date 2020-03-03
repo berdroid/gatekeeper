@@ -103,3 +103,20 @@ class TOTP (OTP):
     def _timecode(self, point_in_time):
         seconds = time.mktime(point_in_time.timetuple())
         return int(seconds / self.interval)
+
+
+
+
+class COTP (TOTP):
+
+    def __init__(self, secret, digits=16, digest=hashlib.sha256, interval=30):
+        super(TOTP, self).__init__(secret, digits, digest)
+        self.interval = interval
+
+
+    def _code(self, hash):
+        offset = hash[-1] & 0xf
+        return base64.b32encode(hash)[offset:offset+self.digits]
+
+
+
