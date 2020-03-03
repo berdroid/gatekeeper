@@ -83,12 +83,12 @@ class TOTP (OTP):
     
     
     def gen_totp(self):
-        return self._at(datetime.datetime.now())
+        return self._at(self._now())
     
     
     def verify_totp(self, code, point_in_time=None, window=0):
         if point_in_time is None:
-            point_in_time = datetime.datetime.now()
+            point_in_time = self._now()
 
         if not isinstance(point_in_time, datetime.datetime):
             point_in_time = datetime.datetime.fromtimestamp(int(point_in_time))
@@ -98,7 +98,11 @@ class TOTP (OTP):
                 return True
             
         return False
-    
+
+
+    def _now(self):
+        return datetime.datetime.utcnow()
+
 
     def _timecode(self, point_in_time):
         seconds = time.mktime(point_in_time.timetuple())
