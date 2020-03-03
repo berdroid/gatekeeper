@@ -22,25 +22,33 @@ class OTP (object):
         self.secret = self._byte_secret(secret)
         self.digits = digits
         self.digest = digest
-        
-        
+
+
     def _cmp_otp(self, theirs, mine):
         theirs = (theirs + '#'*self.digits)[:self.digits]
         c = sum(itertools.imap(lambda a, b: a==b, theirs, mine))
         return c == self.digits
-        
-        
-    def gen_otp(self, value):
-        if value < 0:
-            raise ValueError('value must be positive integer')
-        
-        hasher = hmac.new(self.secret, self._bytes64(value), self.digest)
-        hash = bytearray(hasher.digest())
+
+
+    def _hash(self, bytes):
+        hasher = hmac.new(self.secret, bytes, self.digest)
+        return bytearray(hasher.digest())
+
+
+    def _code(self, hash):
         offset = hash[-1] & 0xf
         code = struct.unpack('>L', hash[offset:offset+4])[0] & 0x7fffffff
         str_code = str(code % 10 ** self.digits)
-        
+
         return ('0'*self.digits + str_code)[-self.digits:]
+
+
+    def gen_otp(self, value):
+        if value < 0:
+            raise ValueError('value must be positive integer')
+
+        hash = self._hash(self._bytes64(value))
+        return self._code(hash)
 
 
     def _byte_secret(self, secret):
