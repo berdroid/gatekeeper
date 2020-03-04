@@ -14,7 +14,7 @@ class StarGateUDP {
     @required secret,
     @required this.hostName,
     @required this.port,
-  }) : _totp = TOTP(secret);
+  }) : _totp = COTP(secret);
 
   final String gate;
   final String hostName;

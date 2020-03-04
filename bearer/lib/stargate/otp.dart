@@ -20,7 +20,7 @@ abstract class OTP {
     return hmac.convert(_intToBytelist(input)).bytes;
   }
 
-  String _code(hmac) {
+  String _code(List<int> hmac) {
     int offset = hmac[hmac.length - 1] & 0xf;
     int code = ((hmac[offset] & 0x7f) << 24 |
       (hmac[offset + 1] & 0xff) << 16 |
@@ -69,5 +69,18 @@ class TOTP extends OTP {
     return pointInTime.millisecondsSinceEpoch ~/ (this.interval * 1000);
   }
 
+}
+
+
+class COTP extends TOTP {
+
+  COTP(secret, {digits = 16, algo, interval = 30}) :
+        super(secret, digits: digits, algo: algo ?? sha256, interval: interval);
+
+  @override
+  String _code(List<int> hmac) {
+    int offset = hmac[hmac.length - 1] & 0xf;
+    return base32.encode(hmac).substring(offset, offset + this.digits);
+  }
 }
 
