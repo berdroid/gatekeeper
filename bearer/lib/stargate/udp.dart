@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:udp/udp.dart';
-import 'package:dotp/dotp.dart';
+
+import 'otp.dart';
 
 typedef GateCallback = void Function(bool);
 
@@ -23,7 +24,7 @@ class StarGateUDP {
 
   void openGate({GateCallback onResult}) async {
     try {
-      final code = _totp.now();
+      final code = _totp.genTotp();
       var sender = await UDP.bind(Endpoint.any());
       List<InternetAddress> address = await InternetAddress.lookup(hostName);
       Endpoint endpoint = Endpoint.unicast(address[0], port: Port(port));
