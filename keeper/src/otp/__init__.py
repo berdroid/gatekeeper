@@ -40,7 +40,7 @@ class OTP (object):
         code = struct.unpack('>L', hash[offset:offset+4])[0] & 0x7fffffff
         str_code = str(code % 10 ** self.digits)
 
-        return ('0'*self.digits + str_code)[-self.digits:]
+        return str_code.rjust(self.digits, '0')
 
 
     def gen_otp(self, value):
@@ -101,7 +101,7 @@ class TOTP (OTP):
 
 
     def _now(self):
-        return datetime.datetime.utcnow()
+        return datetime.datetime.now()
 
 
     def _timecode(self, point_in_time):
