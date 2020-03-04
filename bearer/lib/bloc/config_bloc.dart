@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:stargate/bloc/bloc.dart';
+import 'package:stargate/stargate/otp.dart';
 import 'package:stargate/stargate/udp.dart';
 
 class GateConfig {
@@ -31,10 +32,16 @@ class GateConfig {
     @required this.username,
     this.wifiName,
   }) : config = json.decode(configJSON) {
+    TOTP totp;
+    if (config.containsKey('COTP')) {
+      totp = COTP(config['COTP']['secret']);
+    } else {
+      totp = TOTP(config['TOTP']['secret']);
+    }
     gate = StarGateUDP(
       config['gate'],
       user: username,
-      secret: config['TOTP']['secret'],
+      totp: totp,
       hostName: config['UDP']['host'],
       port: config['UDP']['port'],
     );

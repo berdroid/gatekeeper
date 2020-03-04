@@ -11,20 +11,20 @@ class StarGateUDP {
   StarGateUDP(
     this.gate, {
     @required this.user,
-    @required secret,
+    @required this.totp,
     @required this.hostName,
     @required this.port,
-  }) : _totp = COTP(secret);
+  });
 
   final String gate;
   final String hostName;
   final int port;
   final String user;
-  final TOTP _totp;
+  final TOTP totp;
 
   void openGate({GateCallback onResult}) async {
     try {
-      final code = _totp.genTotp();
+      final code = totp.genTotp();
       var sender = await UDP.bind(Endpoint.any());
       List<InternetAddress> address = await InternetAddress.lookup(hostName);
       Endpoint endpoint = Endpoint.unicast(address[0], port: Port(port));
