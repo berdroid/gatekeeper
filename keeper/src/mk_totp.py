@@ -8,15 +8,23 @@ from StringIO import StringIO
 
 
 if __name__ == '__main__':
+    TEMPLATE = 'Token: {{ "name": "", "kind": "{kind}", "secret": "{secret}", "blocked": false, "person_id": 0 }},'
     
     template_name = sys.argv[1]
     
     secret = otp.OTP.gen_secret()
     
     data = json.load(file(template_name), encoding='utf-8')
-    data['TOTP']['secret'] = secret
+    
+    try:
+        data['TOTP']['secret'] = secret
+        kind = 'totp'
+    except KeyError:
+        data['COTP']['secret'] = secret
+        kind = 'cotp'
     
     config_string = json.dumps(data, ensure_ascii=False, encoding='utf-8')
+    print(config_string)
     
     files = {
         'file': (template_name, StringIO(config_string), 'application/octet-stream'),
@@ -32,7 +40,7 @@ if __name__ == '__main__':
         
         if resp['success']:
             print('Download code: {key}'.format(**resp))
-            print('Token: {{ "name": "", "kind": "totp", "id": "{}", "blocked": false, "person_id": 0 }},'.format(secret))
+            print(TEMPLATE.format(secret=secret, kind=kind))
             sys.exit(0)
             
     print(r.text)
