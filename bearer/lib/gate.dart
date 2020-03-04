@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:stargate/bloc/config_bloc.dart';
 
 import 'stargate/udp.dart';
-import 'package:flutter/material.dart';
 
 class Gate extends StatefulWidget {
   Gate({Key key, this.user, this.gateConfig}) : super(key: key);
@@ -25,13 +25,20 @@ enum GateState {
 
 class _GateState extends State<Gate> {
   StarGateUDP get gate => widget.gateConfig.gate;
+
   Map<String, dynamic> get config => widget.gateConfig.config;
+
   String get name => widget.gateConfig.name;
+
   String get description => widget.gateConfig.description;
+
   bool get accessible => widget.gateConfig.accessible;
 
   GateState _state = GateState.idle;
+  bool _accessible = false;
+
   GateState get state => accessible ? _state : GateState.blocked;
+
   set state(s) {
     if (mounted) {
       setState(() {
@@ -75,6 +82,7 @@ class _GateState extends State<Gate> {
 
     return Center(
       child: Card(
+        color: Colors.white54,
         child: Column(
           children: <Widget>[
             ListTile(
@@ -83,15 +91,7 @@ class _GateState extends State<Gate> {
               trailing: trail,
               title: Text(name),
               subtitle: Text(description),
-              onTap: () {
-                state = GateState.pending;
-                gate.openGate(onResult: (result) {
-                  state = result ? GateState.success : GateState.failed;
-                  Future.delayed(Duration(seconds: 3)).then((_) {
-                    state = GateState.idle;
-                  });
-                });
-              },
+              onTap: _open,
               onLongPress: () {},
             )
           ],
@@ -99,4 +99,15 @@ class _GateState extends State<Gate> {
       ),
     );
   }
+
+  void _open() {
+    state = GateState.pending;
+    gate.openGate(onResult: (result) {
+      state = result ? GateState.success : GateState.failed;
+      Future.delayed(Duration(seconds: 3)).then((_) {
+        state = GateState.idle;
+      });
+    });
+  }
+
 }

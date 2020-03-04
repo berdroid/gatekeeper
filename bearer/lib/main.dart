@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stargate/add_gate.dart';
 import 'package:stargate/bloc/bloc_provider.dart';
@@ -32,6 +35,8 @@ class GatesPage extends StatefulWidget {
 }
 
 class _GatesPageState extends State<GatesPage> {
+  File _bgImage;
+
   @override
   void initState() {
     super.initState();
@@ -77,6 +82,14 @@ class _GatesPageState extends State<GatesPage> {
     print(permissions);
   }
 
+  _getBackGroundImage() {
+    ImagePicker.pickImage(source: ImageSource.gallery).then((File image) {
+      setState(() {
+        _bgImage = image;
+      });
+    });
+  }
+
   Widget gateCard(BuildContext context, GateConfig gate) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12.5),
@@ -99,12 +112,22 @@ class _GatesPageState extends State<GatesPage> {
             leading: Container(height: 1),
             title: Text('Stargate'),
           ),
-          body: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 37.5),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-
-              children: gates.map((e) => gateCard(context, e)).toList(),
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: _bgImage != null 
+                  ? FileImage(_bgImage)
+                  : AssetImage('res/images/background.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            constraints: BoxConstraints.expand(),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 37.5),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: gates.map((e) => gateCard(context, e)).toList(),
+              ),
             ),
           ),
           drawer: Drawer(
@@ -112,6 +135,12 @@ class _GatesPageState extends State<GatesPage> {
               children: <Widget>[
                 DrawerHeader(child: Text('Actions')),
                 Spacer(flex: 25),
+                ListTile(
+                  leading: Icon(Icons.landscape),
+                  title: Text('Background'),
+                  onTap: () => _getBackGroundImage(),
+                ),
+                Spacer(flex: 1),
                 ListTile(
                   leading: Icon(Icons.add_location),
                   title: Text('Add Gate'),
@@ -125,6 +154,9 @@ class _GatesPageState extends State<GatesPage> {
                 ListTile(
                   leading: Icon(Icons.delete),
                   title: Text('Delete All'),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
                   onLongPress: () {
                     Navigator.pop(context);
                     configProvider.clearConfigs();
@@ -133,7 +165,6 @@ class _GatesPageState extends State<GatesPage> {
               ],
             ),
           ),
-
         );
       },
     );
