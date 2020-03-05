@@ -114,8 +114,7 @@ class TOTP (OTP):
 class COTP (TOTP):
 
     def __init__(self, secret, digits=16, digest=hashlib.sha256, interval=30):
-        super(TOTP, self).__init__(secret, digits, digest)
-        self.interval = interval
+        super(TOTP, self).__init__(secret, digits, digest, interval)
 
 
     def _code(self, hash):
