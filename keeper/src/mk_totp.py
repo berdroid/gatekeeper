@@ -8,7 +8,7 @@ from StringIO import StringIO
 
 
 if __name__ == '__main__':
-    TEMPLATE = 'Token: {{ "name": "", "kind": "{kind}", "secret": "{secret}", "blocked": false, "person_id": 0 }},'
+    TEMPLATE = 'Token: {{ "name": "", "kind": "{kind}", "id": "{secret}", "blocked": false, "person_id": 0 }},'
     
     template_name = sys.argv[1]
     
@@ -18,10 +18,10 @@ if __name__ == '__main__':
     
     try:
         data['TOTP']['secret'] = secret
-        kind = 'totp'
+        kind = 'TOTP'
     except KeyError:
         data['COTP']['secret'] = secret
-        kind = 'cotp'
+        kind = 'COTP'
     
     config_string = json.dumps(data, ensure_ascii=False, encoding='utf-8')
     print(config_string)
