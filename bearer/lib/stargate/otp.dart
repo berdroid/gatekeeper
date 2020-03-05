@@ -6,6 +6,8 @@ import 'package:crypto/crypto.dart';
 
 abstract class OTP {
 
+  final kind = 'OTP';
+
   final String secret;
 
   final int digits;
@@ -54,6 +56,9 @@ abstract class OTP {
 
 
 class TOTP extends OTP {
+
+  final kind = 'TOTP';
+
   final int interval;
 
   TOTP(secret, {digits=6, algo, this.interval=30}) :
@@ -73,6 +78,8 @@ class TOTP extends OTP {
 
 
 class COTP extends TOTP {
+
+  final kind = 'COTP';
 
   COTP(secret, {digits = 16, algo, interval = 30}) :
         super(secret, digits: digits, algo: algo ?? sha256, interval: interval);

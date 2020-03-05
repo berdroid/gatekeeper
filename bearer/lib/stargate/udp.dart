@@ -28,7 +28,7 @@ class StarGateUDP {
       var sender = await UDP.bind(Endpoint.any());
       List<InternetAddress> address = await InternetAddress.lookup(hostName);
       Endpoint endpoint = Endpoint.unicast(address[0], port: Port(port));
-      String msg = 'open@$gate:$user:$code:\n';
+      String msg = '$gate:${totp.kind}:$code:\n';
 
       sender.send(msg.codeUnits, endpoint);
       print('sending $code => $address done.');
