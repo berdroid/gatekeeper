@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stargate/add_gate.dart';
 import 'package:stargate/bloc/bloc_provider.dart';
@@ -41,6 +42,7 @@ class _GatesPageState extends State<GatesPage> {
   void initState() {
     super.initState();
     _getPermission();
+    _readBackgroundImage();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final configProvider = BlocProvider.of<ConfigBLoC>(context);
       configProvider.load().then((value) async {
@@ -82,12 +84,28 @@ class _GatesPageState extends State<GatesPage> {
     print(permissions);
   }
 
-  _getBackGroundImage() {
-    ImagePicker.pickImage(source: ImageSource.gallery).then((File image) {
-      setState(() {
-        _bgImage = image;
-      });
+  Future<String> get _bgImagePath async {
+    final appDir = await getApplicationDocumentsDirectory();
+    return '${appDir.path}/app_background';
+  }
+
+  _pickBackGroundImage() async {
+    final File image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    final File bgImage = await image.copy(await _bgImagePath);
+
+    setState(() {
+      _bgImage = bgImage;
     });
+  }
+
+  _readBackgroundImage() async {
+    final File bgImage = File(await _bgImagePath);
+
+    if (await bgImage.exists()) {
+      setState(() {
+        _bgImage = bgImage;
+      });
+    }
   }
 
   Widget gateCard(BuildContext context, GateConfig gate) {
@@ -138,7 +156,10 @@ class _GatesPageState extends State<GatesPage> {
                 ListTile(
                   leading: Icon(Icons.landscape),
                   title: Text('Background'),
-                  onTap: () => _getBackGroundImage(),
+                  onTap: () {
+                    Navigator.pop(context);
+                    return _pickBackGroundImage();
+                  },
                 ),
                 Spacer(flex: 1),
                 ListTile(

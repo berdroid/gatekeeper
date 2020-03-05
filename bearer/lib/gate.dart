@@ -73,7 +73,7 @@ class _GateState extends State<Gate> {
         trail = CircularProgressIndicator();
         break;
       case GateState.success:
-        trail = Icon(Icons.check, size: 32, color: Colors.green);
+        trail = Icon(Icons.check, size: 32, color: Colors.lightGreen[900]);
         break;
       case GateState.failed:
         trail = Icon(Icons.warning, size: 32, color: Colors.orange);
