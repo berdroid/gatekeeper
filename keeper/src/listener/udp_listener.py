@@ -45,12 +45,13 @@ class UDPListener (AbstractListener):
         self.logger.log('UDP:OTP %s: %s' % (addr, msg))
         data = msg.split(':')
         
-        if len(data) >= 3:
+        if len(data) >= 4:
             self.gate = data[0]
             kind = data[1]
-            token = data[2]
+            id = data[2]
+            hash = data[3]
             
-            return kind, token
+            return kind, '{}:{}'.format(id, hash)
                
         return None
     

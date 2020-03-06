@@ -33,14 +33,17 @@ class GateConfig {
     this.wifiName,
   }) : config = json.decode(configJSON) {
     TOTP totp;
+    String id;
     if (config.containsKey('COTP')) {
       totp = COTP(config['COTP']['secret']);
+      id = config['COTP']['id'];
     } else {
       totp = TOTP(config['TOTP']['secret']);
+      id = config['TOTP']['id'];
     }
     gate = StarGateUDP(
       config['gate'],
-      user: username,
+      id: id,
       totp: totp,
       hostName: config['UDP']['host'],
       port: config['UDP']['port'],

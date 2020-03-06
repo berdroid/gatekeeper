@@ -10,7 +10,7 @@ typedef GateCallback = void Function(bool);
 class StarGateUDP {
   StarGateUDP(
     this.gate, {
-    @required this.user,
+    @required this.id,
     @required this.totp,
     @required this.hostName,
     @required this.port,
@@ -19,7 +19,7 @@ class StarGateUDP {
   final String gate;
   final String hostName;
   final int port;
-  final String user;
+  final String id;
   final TOTP totp;
 
   void openGate({GateCallback onResult}) async {
@@ -28,7 +28,7 @@ class StarGateUDP {
       var sender = await UDP.bind(Endpoint.any());
       List<InternetAddress> address = await InternetAddress.lookup(hostName);
       Endpoint endpoint = Endpoint.unicast(address[0], port: Port(port));
-      String msg = '$gate:${totp.kind}:$code:\n';
+      String msg = '$gate:${totp.kind}:$id:$code:\n';
 
       sender.send(msg.codeUnits, endpoint);
       print('sending $code => $address done.');

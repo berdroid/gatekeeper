@@ -35,7 +35,6 @@ class _GateState extends State<Gate> {
   bool get accessible => widget.gateConfig.accessible;
 
   GateState _state = GateState.idle;
-  bool _accessible = false;
 
   GateState get state => accessible ? _state : GateState.blocked;
 
