@@ -37,7 +37,7 @@ class OTP (object):
 
     def _code(self, hash):
         offset = hash[-1] & 0xf
-        code = struct.unpack('>L', hash[offset:offset+4])[0] & 0x7fffffff
+        code = struct.unpack('>L', str(hash)[offset:offset+4])[0] & 0x7fffffff
         str_code = str(code % 10 ** self.digits)
 
         return str_code.rjust(self.digits, '0')
@@ -82,11 +82,11 @@ class TOTP (OTP):
         return self.gen_otp(self._timecode(point_in_time) + offset)
     
     
-    def gen_totp(self):
+    def generate(self):
         return self._at(self._now())
     
     
-    def verify_totp(self, code, point_in_time=None, window=0):
+    def verify(self, code, point_in_time=None, window=0):
         if point_in_time is None:
             point_in_time = self._now()
 
@@ -114,12 +114,12 @@ class TOTP (OTP):
 class COTP (TOTP):
 
     def __init__(self, secret, digits=16, digest=hashlib.sha256, interval=30):
-        super(TOTP, self).__init__(secret, digits, digest, interval)
+        super(COTP, self).__init__(secret, digits, digest, interval)
 
 
     def _code(self, hash):
         offset = hash[-1] & 0xf
-        return base64.b32encode(hash)[offset:offset+self.digits]
+        return base64.b32encode(str(hash))[offset:offset+self.digits]
 
 
 
