@@ -16,7 +16,7 @@ class UDPListener (AbstractListener):
     '''
     listener for RFID tags
     '''
-    name = 'UDP:OTP'
+    name = 'udp_otp'
 
     KIND = 'OTP'
     
@@ -34,6 +34,7 @@ class UDPListener (AbstractListener):
             socket.SOCK_DGRAM
         )
         self.sock.bind((self.params.addr, self.params.port))
+        self.logger.log('UDP:OTP started: %s %s' % (self.params.addr, self.params.port))
         
         
     def close(self):
