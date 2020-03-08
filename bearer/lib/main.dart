@@ -46,34 +46,20 @@ class _GatesPageState extends State<GatesPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final configProvider = BlocProvider.of<ConfigBLoC>(context);
       configProvider.load().then((value) async {
-        if (await _getUsernameIfNeeded(context, configProvider) ||
-            configProvider.numConfigs == 0)
-          _getGateConfigIfPossible(context, configProvider);
+        _getGateConfig(context, configProvider);
       });
     });
   }
 
-  Future<bool> _getUsernameIfNeeded(BuildContext context, ConfigBLoC configProvider) async {
-    return Future<bool>(() async {
-      if (configProvider.username == null) {
-        String username = await Navigator.push(
-          context, MaterialPageRoute(builder: (context) => SetUser())
-        );
-        if (username != null) {
-          await configProvider.setUsername(username);
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
-  _getGateConfigIfPossible(BuildContext context, ConfigBLoC configProvider) async {
-    if (configProvider.username != null) {
-      String config = await Navigator.push(
-          context, MaterialPageRoute(builder: (context) => AddGate()));
-      if (config != null) await configProvider.addConfig(config);
-    }
+  _getGateConfig(BuildContext context, ConfigBLoC configProvider) async {
+    String config = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddGate()
+      )
+    );
+    if (config != null)
+      configProvider.addConfig(config);
   }
 
   _getPermission() async {
@@ -111,10 +97,7 @@ class _GatesPageState extends State<GatesPage> {
   Widget gateCard(BuildContext context, GateConfig gate) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12.5),
-      child: Gate(
-        user: BlocProvider.of<ConfigBLoC>(context).username,
-        gateConfig: gate,
-      ),
+      child: Gate(gateConfig: gate),
     );
   }
 
@@ -167,8 +150,7 @@ class _GatesPageState extends State<GatesPage> {
                   title: Text('Add Gate'),
                   onTap: () {
                     Navigator.pop(context);
-                    _getUsernameIfNeeded(context, configProvider);
-                    _getGateConfigIfPossible(context, configProvider);
+                    _getGateConfig(context, configProvider);
                   },
                 ),
                 Spacer(flex: 1),

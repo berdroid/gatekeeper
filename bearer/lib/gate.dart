@@ -6,9 +6,8 @@ import 'package:stargate/bloc/config_bloc.dart';
 import 'stargate/udp.dart';
 
 class Gate extends StatefulWidget {
-  Gate({Key key, this.user, this.gateConfig}) : super(key: key);
+  Gate({Key key, this.gateConfig}) : super(key: key);
 
-  final String user;
   final GateConfig gateConfig;
 
   @override
@@ -49,7 +48,6 @@ class _GateState extends State<Gate> {
   @override
   void initState() {
     super.initState();
-    print('${widget.user}@${widget.gateConfig.name}');
   }
 
   @override

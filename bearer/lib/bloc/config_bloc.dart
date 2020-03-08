@@ -11,7 +11,6 @@ import 'package:stargate/stargate/udp.dart';
 
 class GateConfig {
   final String configJSON;
-  final String username;
   final String wifiName;
   final Map<String, dynamic> config;
 
@@ -29,7 +28,6 @@ class GateConfig {
 
   GateConfig({
     @required this.configJSON,
-    @required this.username,
     this.wifiName,
   }) : config = json.decode(configJSON) {
     TOTP totp;
@@ -65,13 +63,10 @@ class ConfigBLoC implements Bloc {
 
   Stream<List<GateConfig>> get configStream => _configController.stream;
 
-  String _username;
-
   void _update() {
     _configController.add(_configs
         .map((e) => GateConfig(
               configJSON: e,
-              username: username,
               wifiName: _wifiName,
             ))
         .toList());
@@ -81,7 +76,6 @@ class ConfigBLoC implements Bloc {
     return Future<void>(() async {
       var data = await _storage.readAll();
       _storageValues = Map.from(data);
-      _username = _storageValues['username'];
 
       _configs.clear();
       for (var i = 0; _storageValues.keys.contains('gate@$i'); i++) {
@@ -93,7 +87,6 @@ class ConfigBLoC implements Bloc {
   Future<void> _save() {
     return Future<void>(() async {
       await _storage.deleteAll();
-      await _storage.write(key: 'username', value: _username);
 
       for (var i = 0; i < _configs.length; i++) {
         await _storage.write(key: 'gate@$i', value: _configs[i]);
@@ -101,17 +94,7 @@ class ConfigBLoC implements Bloc {
     });
   }
 
-  String get username => _username;
-
   int get numConfigs => _configs.length;
-
-  Future<void> setUsername(String name) {
-    return Future<void>(() async {
-      _username = name;
-      await _save();
-      _update();
-    });
-  }
 
   Future<void> addConfig(String config) {
     return Future<void>(() async {
@@ -124,7 +107,6 @@ class ConfigBLoC implements Bloc {
   Future<void> clearConfigs() {
     return Future<void>(() async {
       await _storage.deleteAll();
-      _username = null;
       _storageValues?.clear();
       _configs.clear();
       _update();
