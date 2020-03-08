@@ -160,9 +160,15 @@ class _GatesPageState extends State<GatesPage> {
                   onTap: () {
                     Navigator.pop(context);
                   },
-                  onLongPress: () {
+                  onLongPress: () async {
                     Navigator.pop(context);
                     configProvider.clearConfigs();
+                    if (_bgImage != null && await _bgImage.exists()) {
+                      _bgImage.delete();
+                      setState(() {
+                        _bgImage = null;
+                      });
+                    }
                   },
                 ),
               ],
