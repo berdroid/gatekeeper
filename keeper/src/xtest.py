@@ -9,7 +9,7 @@ from lib import logger
 import config
 from connection import ConnectionFactory
 from gate import GateFactory
-from auth import AuthorizationFactory, IdentificationFail, AuthorizationFail
+from auth import AuthorizationFactory, IdentificationFail, AuthentificationFail, AuthorizationFail
 import datetime
 from Queue import Empty
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
                     mail_logger.log('Authorized: %(name)s'  % person, 'with %(name)s' % token, 'at', gate, do_maillog=do_mail)
                     process_logger.log('Authorized: %(name)s'  % person, 'with %(name)s' % token, 'at', gate, person=person, gate=gate)
                     
-        except (IdentificationFail, AuthorizationFail), e:
+        except (IdentificationFail, AuthentificationFail, AuthorizationFail), e:
             mail_logger.log(e.__class__.__name__, str(e))
 
         except Empty:

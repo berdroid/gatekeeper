@@ -43,6 +43,7 @@ class AbstractAuthorization (object):
 
     def check(self, token_key, gate, event_ts):
         token, person = self.identify(token_key)
+        self.authenticate(token, person, token_key)
         result = self.authorize(token, person, gate, event_ts)
         meta = self.metadata(token, person)
         return result, token, person, meta
@@ -50,6 +51,10 @@ class AbstractAuthorization (object):
     
     def identify(self, token_key):
         raise NotImplementedError()
+    
+    
+    def authenticate(self, token, person, token_key):
+        pass
     
     
     def authorize(self, token, person, gate, event_ts):

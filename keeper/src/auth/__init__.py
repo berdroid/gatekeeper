@@ -8,6 +8,10 @@ class IdentificationFail (Exception):
     pass
 
 
+class AuthentificationFail (Exception):
+    pass
+
+
 class AuthorizationFail (Exception):
     pass
 

@@ -5,7 +5,8 @@ Created on Mar 22, 2013
 '''
 
 from auth.abstract_authorization import AbstractAuthorization
-from auth import AuthorizationFactory, IdentificationFail, AuthorizationFail
+from auth import AuthorizationFactory, IdentificationFail, AuthentificationFail, AuthorizationFail
+from otp import COTP
 from lib.dict_obj import DictObj
 import json
 import datetime
@@ -73,6 +74,13 @@ class JsonAuthorization (AbstractAuthorization):
     def identify(self, token_key):
         self.load_auth_data()
         
+        kind, key = token_key
+        
+        if kind == 'COTP':
+            # split off OTP part from IO
+            id, otp = key.split(':')
+            token_key = kind, id 
+        
         if token_key in self.tokens:
             token = self.tokens[token_key]
         
@@ -84,6 +92,26 @@ class JsonAuthorization (AbstractAuthorization):
                 raise IdentificationFail('Could not identify person for token %s' % str(self.token_key(token)))
         
         raise IdentificationFail('Could not identify token %s' % str(token_key))
+    
+    
+    def authenticate(self, token, person, token_key):
+        
+        kind, key = token_key
+        
+        if kind == 'TOTP':
+            id, otp = key.split(':')
+            raise AuthentificationFail('Failed to authenticate person %s with token %s' % (person.name, id))
+        
+        if kind == 'COTP':
+            id, code = key.split(':')
+            print('COTP: %s %s %s %s' % (person.name, id, code, token.secret))
+            cotp = COTP(token.secret)
+            
+            if not cotp.verify(code, window=1):
+                raise AuthentificationFail('Failed to authenticate person %s with token %s' % (person.name, id))
+
+        # authentication successful
+        return
 
 
     def authorize(self, token, person, gate, event_ts):
