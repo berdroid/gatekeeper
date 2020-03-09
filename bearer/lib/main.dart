@@ -45,8 +45,10 @@ class _GatesPageState extends State<GatesPage> {
     _readBackgroundImage();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final configProvider = BlocProvider.of<ConfigBLoC>(context);
-      configProvider.load().then((value) async {
-        _getGateConfig(context, configProvider);
+      configProvider.load().then((value) {
+        if (configProvider.numConfigs == 0) {
+          _getGateConfig(context, configProvider);
+        }
       });
     });
   }
