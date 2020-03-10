@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:stargate/bloc/bloc.dart';
+import 'package:stargate/bloc/network_bloc.dart';
 import 'package:stargate/stargate/otp.dart';
 import 'package:stargate/stargate/udp.dart';
 
@@ -57,9 +57,9 @@ class ConfigBLoC implements Bloc {
   final _storage = FlutterSecureStorage();
   Map<String, String> _storageValues;
 
+  NetworkBLoC _networkBloc;
+  StreamSubscription<String> _neworkSubs;
   String _wifiName;
-
-  StreamSubscription _wlanStatus;
 
   Stream<List<GateConfig>> get configStream => _configController.stream;
 
@@ -113,17 +113,6 @@ class ConfigBLoC implements Bloc {
     });
   }
 
-  void _updateWiFi(ConnectivityResult result) async {
-    if (result == ConnectivityResult.wifi) {
-      _wifiName = await (Connectivity().getWifiName());
-      print('WiFi: $_wifiName');
-    } else {
-      _wifiName = null;
-      print('WiFi: none');
-    }
-    _update();
-  }
-
   ConfigBLoC._() {
     try {
       _load().then((_) {
@@ -133,9 +122,11 @@ class ConfigBLoC implements Bloc {
       print(e);
     }
 
-    _wlanStatus = Connectivity().onConnectivityChanged.listen(_updateWiFi);
-
-    Connectivity().checkConnectivity().then(_updateWiFi);
+    _networkBloc = NetworkBLoC.instance();
+    _neworkSubs = _networkBloc.networkStream.listen((wifiName) {
+      _wifiName = wifiName;
+      _update();
+    });
   }
 
   static ConfigBLoC _instance;
@@ -152,6 +143,7 @@ class ConfigBLoC implements Bloc {
   @override
   void dispose() {
     _configController.close();
-    _wlanStatus.cancel();
+    _networkBloc.dispose();
+    _neworkSubs.cancel();
   }
 }
