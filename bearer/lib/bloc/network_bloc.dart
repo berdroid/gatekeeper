@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/material.dart';
 import 'package:stargate/bloc/bloc.dart';
 
 
-
-class NetworkBLoC implements Bloc {
+class NetworkBLoC extends Bloc with WidgetsBindingObserver {
 
   String _wifiName;
 
@@ -30,11 +30,19 @@ class NetworkBLoC implements Bloc {
     _update();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('$state');
+    if (state == AppLifecycleState.resumed)
+      Connectivity().checkConnectivity().then(_updateWiFi);
+  }
 
   NetworkBLoC._() {
     _wlanStatus = Connectivity().onConnectivityChanged.listen(_updateWiFi);
 
     Connectivity().checkConnectivity().then(_updateWiFi);
+
+    WidgetsBinding.instance.addObserver(this);
   }
 
   static NetworkBLoC _instance;
@@ -49,6 +57,8 @@ class NetworkBLoC implements Bloc {
   @override
   void dispose() {
     _wlanStatus.cancel();
+
+    WidgetsBinding.instance.removeObserver(this);
   }
 }
 

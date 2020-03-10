@@ -8,9 +8,13 @@ import 'package:stargate/add_gate.dart';
 import 'package:stargate/bloc/bloc_provider.dart';
 import 'package:stargate/bloc/config_bloc.dart';
 import 'package:stargate/gate.dart';
-import 'package:stargate/set_user.dart';
+import 'package:stargate/notify.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  final _ = Notify.instance();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   final title = 'Stargate';
@@ -138,6 +142,16 @@ class _GatesPageState extends State<GatesPage> {
               children: <Widget>[
                 DrawerHeader(child: Text('Actions')),
                 Spacer(flex: 25),
+                ListTile(
+                  leading: Icon(Icons.comment),
+                  title: Text('Notify'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Notify.instance().showNotify(0, 'Notify', 'This is new',
+                        () => print('Callback'));
+                  },
+                ),
+                Spacer(flex: 1),
                 ListTile(
                   leading: Icon(Icons.landscape),
                   title: Text('Background'),
