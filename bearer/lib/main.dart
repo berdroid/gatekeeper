@@ -116,7 +116,7 @@ class _GatesPageState extends State<GatesPage> {
         final gates = snapshot.data ?? [];
         return Scaffold(
           appBar: AppBar(
-            leading: Container(height: 1),
+            leading: Image.asset('res/images/app_icon_transp.png'),
             title: Text('Stargate'),
           ),
           body: Container(
