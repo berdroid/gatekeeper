@@ -86,6 +86,7 @@ class _GatesPageState extends State<GatesPage> {
     final File bgImage = await image.copy(await _bgImagePath);
 
     setState(() {
+      imageCache.clear();
       _bgImage = bgImage;
     });
   }
@@ -96,6 +97,15 @@ class _GatesPageState extends State<GatesPage> {
     if (await bgImage.exists()) {
       setState(() {
         _bgImage = bgImage;
+      });
+    }
+  }
+
+  _deleteBackgroundImage() async {
+    if (_bgImage != null && await _bgImage.exists()) {
+      _bgImage.delete();
+      setState(() {
+        _bgImage = null;
       });
     }
   }
@@ -157,7 +167,11 @@ class _GatesPageState extends State<GatesPage> {
                   title: Text('Background'),
                   onTap: () {
                     Navigator.pop(context);
-                    return _pickBackGroundImage();
+                    _pickBackGroundImage();
+                  },
+                  onLongPress: () {
+                    Navigator.pop(context);
+                    _deleteBackgroundImage();
                   },
                 ),
                 Spacer(flex: 1),
@@ -179,12 +193,7 @@ class _GatesPageState extends State<GatesPage> {
                   onLongPress: () async {
                     Navigator.pop(context);
                     configProvider.clearConfigs();
-                    if (_bgImage != null && await _bgImage.exists()) {
-                      _bgImage.delete();
-                      setState(() {
-                        _bgImage = null;
-                      });
-                    }
+                    _deleteBackgroundImage();
                   },
                 ),
               ],
