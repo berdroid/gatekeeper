@@ -31,7 +31,7 @@ class StarGateUDP {
       String msg = '$gate:${totp.kind}:$id:$code:\n';
 
       sender.send(msg.codeUnits, endpoint);
-      print('sending $code => $address done.');
+      print('sending ${totp.kind}:$id => $address done.');
       if (onResult != null) onResult(true);
     } catch (e) {
       print(e);
