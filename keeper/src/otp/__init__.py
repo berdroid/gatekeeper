@@ -14,8 +14,8 @@ class OTP (object):
     CHARS = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ234567')
     
     @classmethod 
-    def gen_secret(cls, bits=256):
-        return ''.join(random.choice(cls.CHARS) for _ in range(bits/8))
+    def gen_secret(cls, bits=160):
+        return ''.join(random.choice(cls.CHARS) for _ in range(bits/5))
     
     
     def __init__(self, secret, digits=6, digest=hashlib.sha1):
