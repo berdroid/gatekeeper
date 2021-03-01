@@ -25,7 +25,7 @@ class ListenerMainGate (object):
 class ListenerSipMainGate (object):
     
     listener_name = 'sip_call'
-    listener_params = { 'domain': '***domain***', 'username': '***user***', 'passwd': '' }
+    listener_params = { 'domain': 'sipgate.de', 'username': '1719621', 'passwd': '' }
     
     gate_name = 'main_gate'
 
@@ -52,7 +52,7 @@ class Authorization (object):
     
 class Logging (object):
     
-    mail_params = { 'host':'***domain***', 'port':465, 'username':'***user***', 'password':'' }
+    mail_params = { 'host':'smtp.web.de', 'port':465, 'username':'bernhard.bender', 'password':'' }
     syslog_params = { 'ident':'gatekeeper' }
     process_params = { 'script': './handle_gate.sh' }
 

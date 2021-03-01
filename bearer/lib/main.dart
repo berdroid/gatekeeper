@@ -17,6 +17,8 @@ void main() {
 class MyApp extends StatelessWidget {
   final title = 'Stargate';
 
+  final picker = ImagePicker();
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -74,7 +76,8 @@ class _GatesPageState extends State<GatesPage> {
   }
 
   _pickBackGroundImage() async {
-    final File image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+    final File image = File(pickedFile.path);
     final File bgImage = await image.copy(await _bgImagePath);
 
     setState(() {
