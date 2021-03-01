@@ -1,10 +1,7 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
 import 'package:http/http.dart' as http;
-
 
 class AddGate extends StatefulWidget {
   @override
@@ -12,7 +9,6 @@ class AddGate extends StatefulWidget {
 }
 
 class _AddGateState extends State<AddGate> {
-
   final _code = TextEditingController();
 
   bool _started;
@@ -55,7 +51,8 @@ class _AddGateState extends State<AddGate> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text('Enter Download Code:',
+            Text(
+              'Enter Download Code:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             TextField(
@@ -64,14 +61,18 @@ class _AddGateState extends State<AddGate> {
               autofocus: true,
               onChanged: (_) => setState(() {}),
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text('Next'),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-              color: Colors.green,
-              onPressed: _started || _code.text.length < 5 ? null : () async {
-                setState(() => _started = true);
-                downloadConfig(context);
-              },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.green,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+              ),
+              onPressed: _started || _code.text.length < 5
+                  ? null
+                  : () async {
+                      setState(() => _started = true);
+                      downloadConfig(context);
+                    },
             ),
             SizedBox(height: 40),
             if (_started) CircularProgressIndicator(),
