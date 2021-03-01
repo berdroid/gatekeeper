@@ -8,11 +8,9 @@ import 'package:stargate/add_gate.dart';
 import 'package:stargate/bloc/bloc_provider.dart';
 import 'package:stargate/bloc/config_bloc.dart';
 import 'package:stargate/gate.dart';
-import 'package:stargate/notify.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  final _ = Notify.instance();
   runApp(MyApp());
 }
 
@@ -58,14 +56,8 @@ class _GatesPageState extends State<GatesPage> {
   }
 
   _getGateConfig(BuildContext context, ConfigBLoC configProvider) async {
-    String config = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddGate()
-      )
-    );
-    if (config != null)
-      configProvider.addConfig(config);
+    String config = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddGate()));
+    if (config != null) configProvider.addConfig(config);
   }
 
   _getPermission() async {
@@ -132,9 +124,7 @@ class _GatesPageState extends State<GatesPage> {
           body: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: _bgImage != null 
-                  ? FileImage(_bgImage)
-                  : AssetImage('res/images/background.jpg'),
+                image: _bgImage != null ? FileImage(_bgImage) : AssetImage('res/images/background.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -152,16 +142,6 @@ class _GatesPageState extends State<GatesPage> {
               children: <Widget>[
                 DrawerHeader(child: Text('Actions')),
                 Spacer(flex: 25),
-                ListTile(
-                  leading: Icon(Icons.comment),
-                  title: Text('Notify'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Notify.instance().showNotify(0, 'Notify', 'This is new',
-                        () => print('Callback'));
-                  },
-                ),
-                Spacer(flex: 1),
                 ListTile(
                   leading: Icon(Icons.landscape),
                   title: Text('Background'),
