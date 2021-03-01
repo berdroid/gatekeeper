@@ -1,0 +1,6 @@
+*.pyc
+*.pyo
+*~
+bearer/res/*.json
+auth.json
+main_gate.json
