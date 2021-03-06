@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:stargate/bloc/bloc.dart';
 
 
 class NetworkBLoC extends Bloc with WidgetsBindingObserver {
-
+  Connectivity _connectivity;
+  WifiInfo _wifi;
+  
   String _wifiName;
 
   StreamSubscription _wlanStatus;
@@ -21,11 +24,15 @@ class NetworkBLoC extends Bloc with WidgetsBindingObserver {
 
   void _updateWiFi(ConnectivityResult result) async {
     if (result == ConnectivityResult.wifi) {
-      _wifiName = await (Connectivity().getWifiName());
-      print('WiFi: $_wifiName');
+      await _wifi.requestLocationServiceAuthorization();
+      _wifiName = await _wifi.getWifiName();
+      final permission = await _wifi.getLocationServiceAuthorization();
+      print('WiFi: ${await _wifi.getWifiName()}, permission: $permission IP: ${await _wifi.getWifiIP()}');
+    } else if (result == ConnectivityResult.mobile) {
+      print('connectivity: mobile');
     } else {
       _wifiName = null;
-      print('WiFi: none');
+      print('connectivity: none');
     }
     _update();
   }
@@ -34,13 +41,15 @@ class NetworkBLoC extends Bloc with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print('$state');
     if (state == AppLifecycleState.resumed)
-      Connectivity().checkConnectivity().then(_updateWiFi);
+      _connectivity.checkConnectivity().then(_updateWiFi);
   }
 
   NetworkBLoC._() {
-    _wlanStatus = Connectivity().onConnectivityChanged.listen(_updateWiFi);
+    _connectivity = Connectivity();
+    _wifi = WifiInfo();
+    _wlanStatus = _connectivity.onConnectivityChanged.listen(_updateWiFi);
 
-    Connectivity().checkConnectivity().then(_updateWiFi);
+    _connectivity.checkConnectivity().then(_updateWiFi);
 
     WidgetsBinding.instance.addObserver(this);
   }
