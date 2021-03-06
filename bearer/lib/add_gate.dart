@@ -27,7 +27,7 @@ class _AddGateState extends State<AddGate> {
   }
 
   void downloadConfig(context) async {
-    final url = 'http://file.io/${_code.text}';
+    final url = 'https://file.io/${_code.text}';
     print('starting with $url');
     final http.Response r = await http.get(url);
     print('${r.statusCode}');
