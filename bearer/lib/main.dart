@@ -65,7 +65,6 @@ class _GatesPageState extends State<GatesPage> {
   _getPermission() async {
     Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([
       PermissionGroup.location,
-      PermissionGroup.locationAlways,
     ]);
     print(permissions);
   }
