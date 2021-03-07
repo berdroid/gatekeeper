@@ -66,7 +66,7 @@ class ConfigBLoC implements Bloc {
   void _update() {
     _configController.add(_configs
         .map((e) => GateConfig(
-              configJSON: e,
+              configJSON: utf8.decode(e.codeUnits),
               wifiName: _wifiName,
             ))
         .toList());
