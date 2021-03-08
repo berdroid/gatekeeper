@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:stargate/add_gate.dart';
 import 'package:stargate/bloc/bloc_provider.dart';
 import 'package:stargate/bloc/config_bloc.dart';
@@ -45,7 +44,6 @@ class _GatesPageState extends State<GatesPage> {
   @override
   void initState() {
     super.initState();
-    _getPermission();
     _readBackgroundImage();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final configProvider = BlocProvider.of<ConfigBLoC>(context);
@@ -60,13 +58,6 @@ class _GatesPageState extends State<GatesPage> {
   _getGateConfig(BuildContext context, ConfigBLoC configProvider) async {
     String config = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddGate()));
     if (config != null) configProvider.addConfig(config);
-  }
-
-  _getPermission() async {
-    Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([
-      PermissionGroup.location,
-    ]);
-    print(permissions);
   }
 
   Future<String> get _bgImagePath async {
