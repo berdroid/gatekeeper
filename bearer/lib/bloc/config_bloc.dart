@@ -58,7 +58,7 @@ class ConfigBLoC implements Bloc {
   Map<String, String> _storageValues;
 
   NetworkBLoC _networkBloc;
-  StreamSubscription<String> _neworkSubs;
+  StreamSubscription<String> _networkSubs;
   String _wifiName;
 
   Stream<List<GateConfig>> get configStream => _configController.stream;
@@ -78,8 +78,17 @@ class ConfigBLoC implements Bloc {
       _storageValues = Map.from(data);
 
       _configs.clear();
-      for (var i = 0; _storageValues.keys.contains('gate@$i'); i++) {
-        _configs.add(_storageValues['gate@$i']);
+      for (final e in _storageValues.entries) {
+        if (e.key.startsWith('gate@')) {
+          try {
+            final config = GateConfig(
+              index: 0,
+              configJSON: utf8.decode(e.value.codeUnits),
+            );
+            print('Loading config: ${e.key}: ${config.name}');
+            _configs.add(e.value);
+          } on FormatException {}
+        }
       }
     });
   }
@@ -123,7 +132,7 @@ class ConfigBLoC implements Bloc {
     }
 
     _networkBloc = NetworkBLoC.instance();
-    _neworkSubs = _networkBloc.networkStream.listen((wifiName) {
+    _networkSubs = _networkBloc.networkStream.listen((wifiName) {
       _wifiName = wifiName;
       _update();
     });
@@ -144,6 +153,6 @@ class ConfigBLoC implements Bloc {
   void dispose() {
     _configController.close();
     _networkBloc.dispose();
-    _neworkSubs.cancel();
+    _networkSubs.cancel();
   }
 }
