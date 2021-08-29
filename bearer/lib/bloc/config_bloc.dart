@@ -10,6 +10,7 @@ import 'package:stargate/stargate/otp.dart';
 import 'package:stargate/stargate/udp.dart';
 
 class GateConfig {
+  final int index;
   final String configJSON;
   final String wifiName;
   final Map<String, dynamic> config;
@@ -27,6 +28,7 @@ class GateConfig {
   }
 
   GateConfig({
+    @required this.index,
     @required this.configJSON,
     this.wifiName,
   }) : config = json.decode(configJSON) {
@@ -65,10 +67,15 @@ class ConfigBLoC implements Bloc {
 
   void _update() {
     _configController.add(_configs
-        .map((e) => GateConfig(
+        .asMap()
+        .map((i, e) => MapEntry<int, GateConfig>(
+            i,
+            GateConfig(
+              index: i,
               configJSON: utf8.decode(e.codeUnits),
               wifiName: _wifiName,
-            ))
+            )))
+        .values
         .toList());
   }
 
@@ -108,6 +115,14 @@ class ConfigBLoC implements Bloc {
   Future<void> addConfig(String config) {
     return Future<void>(() async {
       _configs.add(config);
+      await _save();
+      _update();
+    });
+  }
+
+  Future<void> dropConfig(GateConfig config) {
+    return Future<void>(() async {
+      _configs.removeAt(config.index);
       await _save();
       _update();
     });
