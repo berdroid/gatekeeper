@@ -104,9 +104,9 @@ class _GatesPageState extends State<GatesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final configProvider = BlocProvider.of<ConfigBLoC>(context);
+    final configBloc = BlocProvider.of<ConfigBLoC>(context);
     return StreamBuilder<List<GateConfig>>(
-      stream: configProvider.configStream,
+      stream: configBloc.configStream,
       builder: (context, snapshot) {
         final gates = snapshot.data ?? [];
         return Scaffold(
@@ -153,7 +153,7 @@ class _GatesPageState extends State<GatesPage> {
                   title: Text('Add Gate'),
                   onTap: () {
                     Navigator.pop(context);
-                    _getGateConfig(context, configProvider);
+                    _getGateConfig(context, configBloc);
                   },
                 ),
                 Spacer(flex: 1),
@@ -165,7 +165,7 @@ class _GatesPageState extends State<GatesPage> {
                   },
                   onLongPress: () async {
                     Navigator.pop(context);
-                    configProvider.clearConfigs();
+                    configBloc.clearConfigs();
                     _deleteBackgroundImage();
                   },
                 ),

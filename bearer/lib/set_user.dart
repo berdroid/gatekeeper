@@ -40,11 +40,12 @@ class _SetUserState extends State<SetUser> {
               autofocus: true,
               onChanged: (_) => setState(() {}),
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text('Next'),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5))),
-              color: Colors.green,
+              style: ElevatedButton.styleFrom(
+                primary: Colors.green,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+              ),
               onPressed: _username.text.length < 5
                   ? null
                   : () {
