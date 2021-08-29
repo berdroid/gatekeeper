@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:stargate/bloc/bloc_provider.dart';
 import 'package:stargate/bloc/config_bloc.dart';
 
 import 'stargate/udp.dart';
@@ -20,6 +21,7 @@ enum GateState {
   pending,
   success,
   failed,
+  delete,
 }
 
 class _GateState extends State<Gate> {
@@ -35,12 +37,12 @@ class _GateState extends State<Gate> {
 
   GateState _state = GateState.idle;
 
-  GateState get state => accessible ? _state : GateState.blocked;
+  GateState get state => (accessible || _state == GateState.delete) ? _state : GateState.blocked;
 
   set state(s) {
     if (mounted) {
       setState(() {
-        if (accessible) _state = s;
+        _state = s;
       });
     }
   }
@@ -75,6 +77,9 @@ class _GateState extends State<Gate> {
       case GateState.failed:
         trail = Icon(Icons.warning, size: 32, color: Colors.orange);
         break;
+      case GateState.delete:
+        trail = Icon(Icons.delete_forever, size: 32, color: Colors.red);
+        break;
     }
 
     return Center(
@@ -83,13 +88,21 @@ class _GateState extends State<Gate> {
         child: Column(
           children: <Widget>[
             ListTile(
-              enabled: state == GateState.idle,
+              enabled: true,
               leading: Icon(Icons.vpn_key, size: 32),
               trailing: trail,
               title: Text(name),
               subtitle: Text(description),
-              onTap: _open,
-              onLongPress: () {},
+              onTap: _action,
+              onLongPress: state == GateState.idle || state == GateState.blocked
+                  ? () {
+                      print('long Pressed');
+                      state = GateState.delete;
+                      Future.delayed(Duration(seconds: 3)).then((_) {
+                        state = GateState.idle;
+                      });
+                    }
+                  : null,
             )
           ],
         ),
@@ -97,14 +110,36 @@ class _GateState extends State<Gate> {
     );
   }
 
-  void _open() {
-    state = GateState.pending;
-    gate.openGate(onResult: (result) {
-      state = result ? GateState.success : GateState.failed;
-      Future.delayed(Duration(seconds: 3)).then((_) {
-        state = GateState.idle;
+  void _action() {
+    if (state == GateState.idle) {
+      state = GateState.pending;
+      gate.openGate(onResult: (result) {
+        state = result ? GateState.success : GateState.failed;
+        Future.delayed(Duration(seconds: 3)).then((_) {
+          state = GateState.idle;
+        });
       });
-    });
+    } else if (state == GateState.delete) {
+      final configBloc = BlocProvider.of<ConfigBLoC>(context);
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text(name),
+                content: Text('Really delete entry $name?'),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('No')),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        configBloc.dropConfig(widget.gateConfig);
+                      },
+                      child: Text('Yes')),
+                ],
+              ));
+    }
   }
-
 }
