@@ -11,7 +11,7 @@ class AddGate extends StatefulWidget {
 class _AddGateState extends State<AddGate> {
   final _code = TextEditingController();
 
-  bool _started;
+  late bool _started;
 
   @override
   void initState() {

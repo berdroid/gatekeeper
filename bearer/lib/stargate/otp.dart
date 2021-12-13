@@ -1,11 +1,10 @@
-
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:base32/base32.dart';
 import 'package:crypto/crypto.dart';
 
 abstract class OTP {
-
   final kind = 'OTP';
 
   final String secret;
@@ -14,7 +13,7 @@ abstract class OTP {
 
   final Hash algo;
 
-  OTP(this.secret, {this.digits=6, algo}) : this.algo = algo ?? sha1;
+  OTP(this.secret, {this.digits = 6, algo}) : this.algo = algo ?? sha1;
 
   List<int> _hash(int input) {
     var hmacKey = base32.decode(secret);
@@ -25,10 +24,9 @@ abstract class OTP {
   String _code(List<int> hmac) {
     int offset = hmac[hmac.length - 1] & 0xf;
     int code = ((hmac[offset] & 0x7f) << 24 |
-      (hmac[offset + 1] & 0xff) << 16 |
-      (hmac[offset + 2] & 0xff) << 8 |
-      (hmac[offset + 3] & 0xff)
-    );
+        (hmac[offset + 1] & 0xff) << 16 |
+        (hmac[offset + 2] & 0xff) << 8 |
+        (hmac[offset + 3] & 0xff));
 
     String key = (code % pow(10, this.digits)).toString();
     return key.padLeft(this.digits, '0');
@@ -42,7 +40,7 @@ abstract class OTP {
   List<int> _intToBytelist(int input) {
     var result = [0, 0, 0, 0, 0, 0, 0, 0];
 
-    var i = result.length-1;
+    var i = result.length - 1;
     while (input != 0 && -i <= 0) {
       result[i] = input & 0xff;
       input >>= 8;
@@ -53,16 +51,12 @@ abstract class OTP {
   }
 }
 
-
-
 class TOTP extends OTP {
-
   final kind = 'TOTP';
 
   final int interval;
 
-  TOTP(secret, {digits=6, algo, this.interval=30}) :
-        super(secret, digits: digits, algo: algo);
+  TOTP(secret, {digits = 6, algo, this.interval = 30}) : super(secret, digits: digits, algo: algo);
 
   String genTotp() {
     return genOtp(_timeCode(_now()));
@@ -73,21 +67,17 @@ class TOTP extends OTP {
   int _timeCode(DateTime pointInTime) {
     return pointInTime.millisecondsSinceEpoch ~/ (this.interval * 1000);
   }
-
 }
 
-
 class COTP extends TOTP {
-
   final kind = 'COTP';
 
-  COTP(secret, {digits = 16, algo, interval = 30}) :
-        super(secret, digits: digits, algo: algo ?? sha256, interval: interval);
+  COTP(secret, {digits = 16, algo, interval = 30})
+      : super(secret, digits: digits, algo: algo ?? sha256, interval: interval);
 
   @override
   String _code(List<int> hmac) {
     int offset = hmac[hmac.length - 1] & 0xf;
-    return base32.encode(hmac).substring(offset, offset + this.digits);
+    return base32.encode(hmac as Uint8List).substring(offset, offset + this.digits);
   }
 }
-

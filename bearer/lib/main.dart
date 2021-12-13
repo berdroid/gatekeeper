@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      bloc: ConfigBLoC.instance(),
+      bloc: ConfigBLoC.instance,
       child: MaterialApp(
         title: title,
         theme: ThemeData(
@@ -39,13 +39,13 @@ class GatesPage extends StatefulWidget {
 }
 
 class _GatesPageState extends State<GatesPage> {
-  File _bgImage;
+  File? _bgImage;
 
   @override
   void initState() {
     super.initState();
     _readBackgroundImage();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       final configProvider = BlocProvider.of<ConfigBLoC>(context);
       configProvider.load().then((value) {
         if (configProvider.numConfigs == 0) {
@@ -56,7 +56,7 @@ class _GatesPageState extends State<GatesPage> {
   }
 
   _getGateConfig(BuildContext context, ConfigBLoC configProvider) async {
-    String config = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddGate()));
+    String? config = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddGate()));
     if (config != null) configProvider.addConfig(config);
   }
 
@@ -66,14 +66,16 @@ class _GatesPageState extends State<GatesPage> {
   }
 
   _pickBackGroundImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    final File image = File(pickedFile.path);
-    final File bgImage = await image.copy(await _bgImagePath);
+    final pickedFile = await (ImagePicker().pickImage(source: ImageSource.gallery));
+    if (pickedFile != null) {
+      final File image = File(pickedFile.path);
+      final File bgImage = await image.copy(await _bgImagePath);
 
-    setState(() {
-      imageCache.clear();
-      _bgImage = bgImage;
-    });
+      setState(() {
+        imageCache!.clear();
+        _bgImage = bgImage;
+      });
+    }
   }
 
   _readBackgroundImage() async {
@@ -87,8 +89,8 @@ class _GatesPageState extends State<GatesPage> {
   }
 
   _deleteBackgroundImage() async {
-    if (_bgImage != null && await _bgImage.exists()) {
-      _bgImage.delete();
+    if (_bgImage != null && await _bgImage!.exists()) {
+      _bgImage!.delete();
       setState(() {
         _bgImage = null;
       });
@@ -117,7 +119,8 @@ class _GatesPageState extends State<GatesPage> {
           body: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: _bgImage != null ? FileImage(_bgImage) : AssetImage('res/images/background.jpg'),
+                image: (_bgImage != null ? FileImage(_bgImage!) : AssetImage('res/images/background.jpg'))
+                    as ImageProvider<Object>,
                 fit: BoxFit.cover,
               ),
             ),

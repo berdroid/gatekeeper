@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:stargate/bloc/bloc.dart';
@@ -12,10 +11,10 @@ import 'package:stargate/stargate/udp.dart';
 class GateConfig {
   final int index;
   final String configJSON;
-  final String wifiName;
+  final String? wifiName;
   final Map<String, dynamic> config;
 
-  StarGateUDP gate;
+  late final StarGateUDP gate;
 
   String get name => config['name'];
   String get description => config['desc'];
@@ -28,18 +27,18 @@ class GateConfig {
   }
 
   GateConfig({
-    @required this.index,
-    @required this.configJSON,
+    required this.index,
+    required this.configJSON,
     this.wifiName,
-  }) : config = json.decode(configJSON) {
+  }) : config = json.decode(configJSON) ?? {} {
     TOTP totp;
     String id;
     if (config.containsKey('COTP')) {
-      totp = COTP(config['COTP']['secret']);
-      id = config['COTP']['id'];
+      totp = COTP(config['COTP']['secret'] as String);
+      id = config['COTP']['id'] as String;
     } else {
-      totp = TOTP(config['TOTP']['secret']);
-      id = config['TOTP']['id'];
+      totp = TOTP(config['TOTP']['secret'] as String);
+      id = config['TOTP']['id'] as String;
     }
     gate = StarGateUDP(
       config['gate'],
@@ -57,11 +56,11 @@ class ConfigBLoC implements Bloc {
   final _configController = StreamController<List<GateConfig>>();
 
   final _storage = FlutterSecureStorage();
-  Map<String, String> _storageValues;
+  Map<String, String>? _storageValues;
 
-  NetworkBLoC _networkBloc;
-  StreamSubscription<String> _networkSubs;
-  String _wifiName;
+  late NetworkBLoC _networkBloc;
+  late StreamSubscription<String?> _networkSubs;
+  String? _wifiName;
 
   Stream<List<GateConfig>> get configStream => _configController.stream;
 
@@ -85,7 +84,7 @@ class ConfigBLoC implements Bloc {
       _storageValues = Map.from(data);
 
       _configs.clear();
-      for (final e in _storageValues.entries) {
+      for (final e in _storageValues!.entries) {
         if (e.key.startsWith('gate@')) {
           try {
             final config = GateConfig(
@@ -146,21 +145,14 @@ class ConfigBLoC implements Bloc {
       print(e);
     }
 
-    _networkBloc = NetworkBLoC.instance();
+    _networkBloc = NetworkBLoC.instance;
     _networkSubs = _networkBloc.networkStream.listen((wifiName) {
       _wifiName = wifiName;
       _update();
     });
   }
 
-  static ConfigBLoC _instance;
-
-  factory ConfigBLoC.instance() {
-    if (_instance == null) {
-      _instance = ConfigBLoC._();
-    }
-    return _instance;
-  }
+  static ConfigBLoC instance = ConfigBLoC._();
 
   Future<void> load() => _load();
 

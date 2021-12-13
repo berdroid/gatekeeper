@@ -7,16 +7,16 @@ import 'package:stargate/bloc/bloc.dart';
 import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 
 class NetworkBLoC extends Bloc with WidgetsBindingObserver {
-  Connectivity _connectivity;
-  WifiInfo _wifi;
+  late Connectivity _connectivity;
+  late WifiInfo _wifi;
 
-  String _wifiName;
+  String? _wifiName;
 
-  StreamSubscription _wlanStatus;
+  late StreamSubscription _wlanStatus;
 
-  final _networkController = StreamController<String>();
+  final _networkController = StreamController<String?>();
 
-  Stream<String> get networkStream => _networkController.stream;
+  Stream<String?> get networkStream => _networkController.stream;
 
   void _update() {
     _networkController.add(_wifiName);
@@ -51,24 +51,17 @@ class NetworkBLoC extends Bloc with WidgetsBindingObserver {
 
         _connectivity.checkConnectivity().then(_updateWiFi);
 
-        WidgetsBinding.instance.addObserver(this);
+        WidgetsBinding.instance!.addObserver(this);
       }
     });
   }
 
-  static NetworkBLoC _instance;
-
-  factory NetworkBLoC.instance() {
-    if (_instance == null) {
-      _instance = NetworkBLoC._();
-    }
-    return _instance;
-  }
+  static NetworkBLoC instance = NetworkBLoC._();
 
   @override
   void dispose() {
     _wlanStatus.cancel();
 
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
   }
 }

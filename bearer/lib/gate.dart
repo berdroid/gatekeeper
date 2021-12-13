@@ -7,7 +7,7 @@ import 'package:stargate/bloc/config_bloc.dart';
 import 'stargate/udp.dart';
 
 class Gate extends StatefulWidget {
-  Gate({Key key, this.gateConfig}) : super(key: key);
+  Gate({Key? key, required this.gateConfig}) : super(key: key);
 
   final GateConfig gateConfig;
 
@@ -59,7 +59,7 @@ class _GateState extends State<Gate> {
 
   @override
   Widget build(BuildContext context) {
-    Widget trail;
+    Widget? trail;
 
     switch (state) {
       case GateState.blocked:

@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
-
 import 'otp.dart';
 
 typedef GateCallback = void Function(bool);
@@ -9,10 +7,10 @@ typedef GateCallback = void Function(bool);
 class StarGateUDP {
   StarGateUDP(
     this.gate, {
-    @required this.id,
-    @required this.totp,
-    @required this.hostName,
-    @required this.port,
+    required this.id,
+    required this.totp,
+    required this.hostName,
+    required this.port,
   });
 
   final String gate;
@@ -21,7 +19,7 @@ class StarGateUDP {
   final String id;
   final TOTP totp;
 
-  void openGate({GateCallback onResult}) async {
+  void openGate({GateCallback? onResult}) async {
     try {
       final code = totp.genTotp();
 
