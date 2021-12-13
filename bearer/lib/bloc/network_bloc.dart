@@ -42,9 +42,9 @@ class NetworkBLoC extends Bloc with WidgetsBindingObserver {
   }
 
   NetworkBLoC._() {
-    PermissionHandler().requestPermissions([PermissionGroup.location]).then((permissions) {
-      print(permissions);
-      if (permissions.containsKey(PermissionGroup.location)) {
+    Permission.locationWhenInUse.request().then((permissionStatus) {
+      print(permissionStatus);
+      if (permissionStatus.isGranted) {
         _connectivity = Connectivity();
         _wifi = WifiInfo();
         _wlanStatus = _connectivity.onConnectivityChanged.listen(_updateWiFi);
