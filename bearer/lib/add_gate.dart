@@ -27,9 +27,9 @@ class _AddGateState extends State<AddGate> {
   }
 
   void downloadConfig(context) async {
-    final url = 'https://file.io/${_code.text}';
-    print('starting with $url');
-    final http.Response r = await http.get(url);
+    final uri = Uri.https('file.io', _code.text);
+    print('starting with $uri');
+    final http.Response r = await http.get(uri);
     print('${r.statusCode}');
     if (r.statusCode == HttpStatus.ok) {
       Navigator.pop(context, r.body);
