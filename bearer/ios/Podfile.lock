@@ -7,9 +7,9 @@ PODS:
     - Flutter
   - image_picker (0.0.1):
     - Flutter
-  - path_provider (0.0.1):
+  - path_provider_ios (0.0.1):
     - Flutter
-  - "permission_handler (4.4.0+hotfix.4)":
+  - "permission_handler (5.1.0+2)":
     - Flutter
   - Reachability (3.2)
   - wifi_info_flutter (0.0.1):
@@ -20,7 +20,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
-  - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - wifi_info_flutter (from `.symlinks/plugins/wifi_info_flutter/ios`)
 
@@ -37,8 +37,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
-  path_provider:
-    :path: ".symlinks/plugins/path_provider/ios"
+  path_provider_ios:
+    :path: ".symlinks/plugins/path_provider_ios/ios"
   permission_handler:
     :path: ".symlinks/plugins/permission_handler/ios"
   wifi_info_flutter:
@@ -48,12 +48,12 @@ SPEC CHECKSUMS:
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
-  image_picker: 9c3312491f862b28d21ecd8fdf0ee14e601b3f09
-  path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
-  permission_handler: 8278954f2382902f63f00dd8828769c0bd6d511b
+  image_picker: 9aa50e1d8cdacdbed739e925b7eea16d014367e6
+  path_provider_ios: 7d7ce634493af4477d156294792024ec3485acd5
+  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   wifi_info_flutter: 55d4c2469034f5b5c38063ccefa62f708a503a2b
 
-PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+PODFILE CHECKSUM: a0b3d5ac4c99b314688ac5c052461b6a136db004
 
 COCOAPODS: 1.10.1
