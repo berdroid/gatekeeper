@@ -66,7 +66,7 @@ class _GatesPageState extends State<GatesPage> {
   }
 
   _pickBackGroundImage() async {
-    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     final File image = File(pickedFile.path);
     final File bgImage = await image.copy(await _bgImagePath);
 
