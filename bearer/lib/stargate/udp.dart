@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
-import 'package:udp/udp.dart';
+import 'package:flutter/foundation.dart';
 
 import 'otp.dart';
 
@@ -25,12 +24,12 @@ class StarGateUDP {
   void openGate({GateCallback onResult}) async {
     try {
       final code = totp.genTotp();
-      var sender = await UDP.bind(Endpoint.any());
+
+      var socket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
       List<InternetAddress> address = await InternetAddress.lookup(hostName);
-      Endpoint endpoint = Endpoint.unicast(address[0], port: Port(port));
       String msg = '$gate:${totp.kind}:$id:$code:\n';
 
-      sender.send(msg.codeUnits, endpoint);
+      socket.send(msg.codeUnits, address[0], port);
       print('sending ${totp.kind}:$id => $address done.');
       if (onResult != null) onResult(true);
     } catch (e) {
