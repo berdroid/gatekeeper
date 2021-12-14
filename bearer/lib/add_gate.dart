@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AddGate extends StatefulWidget {
+  const AddGate({Key? key}) : super(key: key);
+
   @override
   _AddGateState createState() => _AddGateState();
 }
@@ -44,14 +46,14 @@ class _AddGateState extends State<AddGate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Gate'),
+        title: const Text('Add New Gate'),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 100, vertical: 25),
+        padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 25),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text(
+            const Text(
               'Enter Download Code:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -62,10 +64,10 @@ class _AddGateState extends State<AddGate> {
               onChanged: (_) => setState(() {}),
             ),
             ElevatedButton(
-              child: Text('Next'),
+              child: const Text('Next'),
               style: ElevatedButton.styleFrom(
                 primary: Colors.green,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
               ),
               onPressed: _started || _code.text.length < 5
                   ? null
@@ -74,8 +76,8 @@ class _AddGateState extends State<AddGate> {
                       downloadConfig(context);
                     },
             ),
-            SizedBox(height: 40),
-            if (_started) CircularProgressIndicator(),
+            const SizedBox(height: 40),
+            if (_started) const CircularProgressIndicator(),
           ],
         ),
       ),

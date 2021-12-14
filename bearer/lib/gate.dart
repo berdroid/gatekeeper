@@ -7,7 +7,7 @@ import 'package:stargate/bloc/config_bloc.dart';
 import 'stargate/udp.dart';
 
 class Gate extends StatefulWidget {
-  Gate({Key? key, required this.gateConfig}) : super(key: key);
+  const Gate({Key? key, required this.gateConfig}) : super(key: key);
 
   final GateConfig gateConfig;
 
@@ -48,37 +48,27 @@ class _GateState extends State<Gate> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    Widget? trail;
+    final Widget trail;
 
     switch (state) {
       case GateState.blocked:
-        trail = Icon(Icons.block, size: 32, color: Colors.red);
+        trail = const Icon(Icons.block, size: 32, color: Colors.red);
         break;
       case GateState.idle:
-        trail = SizedBox(width: 32, height: 32);
+        trail = const SizedBox(width: 32, height: 32);
         break;
       case GateState.pending:
-        trail = CircularProgressIndicator();
+        trail = const CircularProgressIndicator();
         break;
       case GateState.success:
         trail = Icon(Icons.check, size: 32, color: Colors.lightGreen[900]);
         break;
       case GateState.failed:
-        trail = Icon(Icons.warning, size: 32, color: Colors.orange);
+        trail = const Icon(Icons.warning, size: 32, color: Colors.orange);
         break;
       case GateState.delete:
-        trail = Icon(Icons.delete_forever, size: 32, color: Colors.red);
+        trail = const Icon(Icons.delete_forever, size: 32, color: Colors.red);
         break;
     }
 
@@ -89,7 +79,7 @@ class _GateState extends State<Gate> {
           children: <Widget>[
             ListTile(
               enabled: true,
-              leading: Icon(Icons.vpn_key, size: 32),
+              leading: const Icon(Icons.vpn_key, size: 32),
               trailing: trail,
               title: Text(name),
               subtitle: Text(description),
@@ -98,7 +88,7 @@ class _GateState extends State<Gate> {
                   ? () {
                       print('long Pressed');
                       state = GateState.delete;
-                      Future.delayed(Duration(seconds: 3)).then((_) {
+                      Future.delayed(const Duration(seconds: 3)).then((_) {
                         state = GateState.idle;
                       });
                     }
@@ -115,31 +105,32 @@ class _GateState extends State<Gate> {
       state = GateState.pending;
       gate.openGate(onResult: (result) {
         state = result ? GateState.success : GateState.failed;
-        Future.delayed(Duration(seconds: 3)).then((_) {
+        Future.delayed(const Duration(seconds: 3)).then((_) {
           state = GateState.idle;
         });
       });
     } else if (state == GateState.delete) {
       final configBloc = BlocProvider.of<ConfigBLoC>(context);
       showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text(name),
-                content: Text('Really delete entry $name?'),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('No')),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        configBloc.dropConfig(widget.gateConfig);
-                      },
-                      child: Text('Yes')),
-                ],
-              ));
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(name),
+          content: Text('Really delete entry $name?'),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('No')),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  configBloc.dropConfig(widget.gateConfig);
+                },
+                child: const Text('Yes')),
+          ],
+        ),
+      );
     }
   }
 }
