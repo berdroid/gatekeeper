@@ -20,10 +20,11 @@ class GateConfig {
   String get description => config['desc'];
 
   bool get accessible {
-    if (config['UDP'].keys.contains('wlan'))
+    if (config['UDP'].keys.contains('wlan')) {
       return wifiName == config['UDP']['wlan'];
-    else
+    } else {
       return true;
+    }
   }
 
   GateConfig({
@@ -55,8 +56,8 @@ class ConfigBLoC implements Bloc {
 
   final _configController = StreamController<List<GateConfig>>();
 
-  final _storage = FlutterSecureStorage();
-  Map<String, String>? _storageValues;
+  final _storage = const FlutterSecureStorage();
+  late Map<String, String> _storageValues;
 
   late NetworkBLoC _networkBloc;
   late StreamSubscription<String?> _networkSubs;
@@ -84,7 +85,7 @@ class ConfigBLoC implements Bloc {
       _storageValues = Map.from(data);
 
       _configs.clear();
-      for (final e in _storageValues!.entries) {
+      for (final e in _storageValues.entries) {
         if (e.key.startsWith('gate@')) {
           try {
             final config = GateConfig(
@@ -93,7 +94,9 @@ class ConfigBLoC implements Bloc {
             );
             print('Loading config: ${e.key}: ${config.name}');
             _configs.add(e.value);
-          } on FormatException {}
+          } on FormatException {
+            // ignore invalid entries
+          }
         }
       }
     });
@@ -130,7 +133,7 @@ class ConfigBLoC implements Bloc {
   Future<void> clearConfigs() {
     return Future<void>(() async {
       await _storage.deleteAll();
-      _storageValues?.clear();
+      _storageValues.clear();
       _configs.clear();
       _update();
     });

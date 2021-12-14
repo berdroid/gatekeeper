@@ -5,7 +5,7 @@ import 'package:base32/base32.dart';
 import 'package:crypto/crypto.dart';
 
 abstract class OTP {
-  final kind = 'OTP';
+  String get kind => 'OTP';
 
   final String secret;
 
@@ -13,7 +13,7 @@ abstract class OTP {
 
   final Hash algo;
 
-  OTP(this.secret, {this.digits = 6, algo}) : this.algo = algo ?? sha1;
+  OTP(this.secret, {this.digits = 6, algo}) : algo = algo ?? sha1;
 
   List<int> _hash(int input) {
     var hmacKey = base32.decode(secret);
@@ -28,8 +28,8 @@ abstract class OTP {
         (hmac[offset + 2] & 0xff) << 8 |
         (hmac[offset + 3] & 0xff));
 
-    String key = (code % pow(10, this.digits)).toString();
-    return key.padLeft(this.digits, '0');
+    String key = (code % pow(10, digits)).toString();
+    return key.padLeft(digits, '0');
   }
 
   String genOtp(int input) {
@@ -52,7 +52,8 @@ abstract class OTP {
 }
 
 class TOTP extends OTP {
-  final kind = 'TOTP';
+  @override
+  String get kind => 'TOTP';
 
   final int interval;
 
@@ -65,12 +66,13 @@ class TOTP extends OTP {
   DateTime _now() => DateTime.now().toUtc();
 
   int _timeCode(DateTime pointInTime) {
-    return pointInTime.millisecondsSinceEpoch ~/ (this.interval * 1000);
+    return pointInTime.millisecondsSinceEpoch ~/ (interval * 1000);
   }
 }
 
 class COTP extends TOTP {
-  final kind = 'COTP';
+  @override
+  String get kind => 'COTP';
 
   COTP(secret, {digits = 16, algo, interval = 30})
       : super(secret, digits: digits, algo: algo ?? sha256, interval: interval);
@@ -78,6 +80,6 @@ class COTP extends TOTP {
   @override
   String _code(List<int> hmac) {
     int offset = hmac[hmac.length - 1] & 0xf;
-    return base32.encode(hmac as Uint8List).substring(offset, offset + this.digits);
+    return base32.encode(hmac as Uint8List).substring(offset, offset + digits);
   }
 }
