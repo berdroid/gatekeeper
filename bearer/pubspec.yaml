@@ -26,14 +26,14 @@ dependencies:
   wifi_info_flutter: ^2.0.2
   http: ^0.13.4
   flutter_secure_storage: ^5.0.2
-  permission_handler: ^8.3.0
+  permission_handler: ^9.2.0
   image_picker: ^0.8.4+4
   path_provider: ^2.0.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.4
+  flutter_lints: ^2.0.1
 
 
 # For information on the generic Dart part of this file, see the
