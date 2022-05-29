@@ -90,5 +90,7 @@
     <key>NSRemindersUsageDescription</key>
     <string>reminders</string>
 
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 </dict>
 </plist>
