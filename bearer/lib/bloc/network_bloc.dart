@@ -51,7 +51,7 @@ class NetworkBLoC extends Bloc with WidgetsBindingObserver {
 
         _connectivity.checkConnectivity().then(_updateWiFi);
 
-        WidgetsBinding.instance!.addObserver(this);
+        WidgetsBinding.instance.addObserver(this);
       }
     });
   }
@@ -62,6 +62,6 @@ class NetworkBLoC extends Bloc with WidgetsBindingObserver {
   void dispose() {
     _wlanStatus.cancel();
 
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
   }
 }

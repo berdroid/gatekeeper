@@ -7,7 +7,7 @@ class AddGate extends StatefulWidget {
   const AddGate({Key? key}) : super(key: key);
 
   @override
-  _AddGateState createState() => _AddGateState();
+  State<AddGate> createState() => _AddGateState();
 }
 
 class _AddGateState extends State<AddGate> {
@@ -64,9 +64,8 @@ class _AddGateState extends State<AddGate> {
               onChanged: (_) => setState(() {}),
             ),
             ElevatedButton(
-              child: const Text('Next'),
               style: ElevatedButton.styleFrom(
-                primary: Colors.green,
+                backgroundColor: Colors.green,
                 shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
               ),
               onPressed: _started || _code.text.length < 5
@@ -75,6 +74,7 @@ class _AddGateState extends State<AddGate> {
                       setState(() => _started = true);
                       downloadConfig(context);
                     },
+              child: const Text('Next'),
             ),
             const SizedBox(height: 40),
             if (_started) const CircularProgressIndicator(),

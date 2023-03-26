@@ -39,7 +39,7 @@ class GatesPage extends StatefulWidget {
   const GatesPage({Key? key}) : super(key: key);
 
   @override
-  _GatesPageState createState() => _GatesPageState();
+  State<GatesPage> createState() => _GatesPageState();
 }
 
 class _GatesPageState extends State<GatesPage> {
@@ -49,7 +49,7 @@ class _GatesPageState extends State<GatesPage> {
   void initState() {
     super.initState();
     _readBackgroundImage();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       final configProvider = BlocProvider.of<ConfigBLoC>(context);
       configProvider.load().then((_) {
         if (configProvider.numConfigs == 0) {
@@ -79,7 +79,7 @@ class _GatesPageState extends State<GatesPage> {
       final File bgImage = await image.copy(await _bgImagePath);
 
       setState(() {
-        imageCache!.clear();
+        imageCache.clear();
         _bgImage = bgImage;
       });
     }

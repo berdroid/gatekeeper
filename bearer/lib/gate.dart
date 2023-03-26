@@ -12,7 +12,7 @@ class Gate extends StatefulWidget {
   final GateConfig gateConfig;
 
   @override
-  _GateState createState() => _GateState();
+  State<Gate> createState() => _GateState();
 }
 
 enum GateState {
