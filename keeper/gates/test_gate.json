@@ -1,0 +1,13 @@
+{
+  "gate": "test_gate",
+  "name": "Vordertüre",
+  "desc": "Haldenweg",
+  "UDP": {
+    "host": "stargate",
+    "port": 4242,
+    "wlan": "AndroidWifi"
+  },
+  "COTP": {
+    "secret": "KNALKNALKNALKNAL"
+  }
+}
